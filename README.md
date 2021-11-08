@@ -15,12 +15,12 @@ ID & Namn           & Prioritet & Tid (d) & Demo  & Not   & Spring  & Status
 Sprint backlog 1
 ID & Namn                   & Prioritet & Tid (d)   & Demo                              & Not         & Spring  & Status
 
-1 & Databashantering        & 9         & 1         & Tester & Hämta och lagra data     & -           & 1       & Färdig
-2 & Enkel hemsida           & 5         & 1         & -                                 & -           & 1       & Färdig          
-3 & Visa data på hemsida    & 4         & 1         & -                                 & -           & 1       & Färdig       
+1 & Databashantering        & 9         & 1         & Tester & Hämta och lagra data     & -           & 1       & Färdig  -
+2 & Enkel hemsida           & 5         & 1         & -                                 & -           & 1       & Färdig  -        
+3 & Visa data på hemsida    & 4         & 1         & -                                 & -           & 1       & Färdig  -    
 4 & Databasschema           & 1         & 1         & -                                 & För tidigt  & 1       & -
-5 & Skapa konto             & 1         & 1         & Visa i databas att konto skapats  & -           & 1       & Färdig
-6 & Logga in/ut             & 1         & 1         & Visa att användare är inloggad    & -           & 1       & Färdig
+5 & Skapa konto             & 1         & 1         & Visa i databas att konto skapats  & -           & 1       & Färdig  -
+6 & Logga in/ut             & 1         & 1         & Visa att användare är inloggad    & -           & 1       & Färdig  -
 
 
 Sprint backlog 2
