@@ -6,6 +6,7 @@ include("db_connection.php");
 
 if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {	
 	echo "Inloggad som " . $_SESSION['username'] . ".";
+	// GÖRA SÖKNING OCH RADERA ALLA ORDRAR SOM HAR 0 ???
 } else {
 	echo "Du behöver logga in för åtkomst till affären.";
 	header("Location: home.php");	
@@ -15,16 +16,33 @@ if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
     if (isset($_POST['Betala'])) {
-		echo "balle";
 		$username = $_SESSION['username'];
 		$orderID = $_SESSION['OrderID'];
         $sql = "UPDATE db19880310.Orders SET Status='Ordered' WHERE Username='$username' AND OrderID='$orderID'"; 
 		$res = mysqli_query($conn, $sql);
-		header("Location: store.php");	
+		header("Location: basket.php");	
 		die;
-    } 
+    }
+	//Gör funktion av detta?
+    if (isset($_POST['ChangeGold'])) {
+	$orderID = $_SESSION['OrderID'];
+	$quantity = $_POST['changegold'];
+	echo $quantity;
+        $sql = "UPDATE db19880310.OrderItems SET Quantity='$quantity' WHERE ProductID='1' AND OrderID='$orderID'"; 
+	$res = mysqli_query($conn, $sql);
+	header("Location: basket.php");	
+	die;
+    }
+    if (isset($_POST['ChangeSilver'])) {
+	$orderID = $_SESSION['OrderID'];
+	$quantity = $_POST['changesilver'];
+        $sql = "UPDATE db19880310.OrderItems SET Quantity='$quantity' WHERE ProductID='2' AND OrderID='$orderID'"; 
+	$res = mysqli_query($conn, $sql);
+	header("Location: basket.php");	
+	die;
+    }
 }
-
+	
 
 
 	$username = $_SESSION['username'];
@@ -120,6 +138,7 @@ if(isset($data)) {
 body {background-color: powderblue;}
 h1   {color: blue;}
 p    {color: blue;}
+h3   {color: red;}
 </style>
 </head>
 <body>
@@ -134,21 +153,28 @@ p    {color: blue;}
 <?php
 if($goldCount > 0) {
 ?>
-<fieldset>
-<p style="text-align:center;"><label for="fname">99,9% rent guld. Pris 244kr/g.</label></p>
-<p style="text-align:center;">
-<img src="https://cdn-3d.niceshops.com/upload/image/product/large/default/fiberlogy-fibersilk-metallic-gold-326274-sv.jpg" alt="Logo" width="150" height="100"></p>
 
-<p style="text-align:center;"><label id="guld"></label></p>
-<p style="text-align:center;"><label id="guldPris"></label></p>
+
+
+<fieldset>
+<center>
+<div style="width:500px;">
+  <div style="width:200px; float:left;"><p style="text-align:center;">
+<a href="gold.php"><input type="image" src="https://cdn-3d.niceshops.com/upload/image/product/large/default/fiberlogy-fibersilk-metallic-gold-326274-sv.jpg" name="submit" width="200" height="150"/></a></p>
+</div></center>
+  <div style="width:700px; float:right;"><p><a href="gold.php">99,9% rent guld.</a></p><p style="text-decoration: underline;"><label id="guld"></label></p>
+<p style="text-decoration: underline;"><label id="guldPris"></label></p>
+
+
 
 <form name="form" method="POST">
-    <p style="text-align:center;">
-	<label for="username">Ändra varukorgen? Skriv in nytt önskat antal produkter: </label>
-	<input type="text" id="username" name="username">
-	<button type="submit" value="Submit">Ändra varukorg</button></p>
-</form>
-
+    <p>
+	<label for="username">Ändra varukorgen? Skriv in nytt önskat<br> antal produkter: </label>
+	<input type="text" id="changegold" name="changegold">
+	<button type="submit" name="ChangeGold" value="Submit">Ändra varukorg</button></p>
+</form></div>
+</div>
+<div style="clear: both;"></div>
 </fieldset>
 <?php
 }
@@ -160,21 +186,26 @@ if($goldCount > 0) {
 if($silverCount > 0) {
 ?>
 <fieldset>
-<p style="text-align:center;"><label for="fname">99,9% rent silver. Pris 3.20kr/g.</label></p>
-<p style="text-align:center;">
-<img src="https://th.bing.com/th/id/R.4647e7752887fe3122b9e7036a0e68ce?rik=nDnCb7zPvrhJXw&pid=ImgRaw&r=0" alt="Logo" width="150" height="100"></p>
+<center>
+<div style="width:500px;">
+  <div style="width:200px; float:left;"><a href="silver.php"><input type="image" src="https://th.bing.com/th/id/R.4647e7752887fe3122b9e7036a0e68ce?rik=nDnCb7zPvrhJXw&pid=ImgRaw&r=0" name="submit" width="200" height="150"/></a></p>
+</div></center>
+  <div style="width:700px; float:right;"><p><a href="silver.php">99,9% rent silver.</a></p><p style="text-decoration: underline;"><label id="silver"></label></p>
+<p style="text-decoration: underline;"><label id="silverPris"></label></p>
 
-<p style="text-align:center;"><label id="silver"></label></p>
-<p style="text-align:center;"><label id="silverPris"></label></p>
+
 
 <form name="form" method="POST">
-    <p style="text-align:center;">
-	<label for="username">Ändra varukorgen? Skriv in nytt önskat antal produkter: </label>
-	<input type="text" id="username" name="username">
-	<button type="submit" value="Submit">Ändra varukorg</button></p>
-</form>
-
+    <p>
+	<label for="username">Ändra varukorgen? Skriv in nytt önskat<br> antal produkter: </label>
+	<input type="text" id="changesilver" name="changesilver">
+	<button type="submit" name="ChangeSilver" value="Submit">Ändra varukorg</button></p>
+</form></div>
+</div>
+<div style="clear: both;"></div>
 </fieldset>
+
+
 <?php
 }
 ?>
@@ -224,21 +255,23 @@ if($totalPrice != 0) {
 	}
 	?>
 
-    function getGoldcount() {
+       function getGoldcount() {
         var guld = <?php echo $goldCount ?>;
-		document.getElementById('guld').innerHTML = "Antal guld: " + guld;	
+		document.getElementById('guld').innerHTML = "Produkter i varukorgen: " + guld + " gram guld.";	
     }
 	function getGoldprice() {
 		var price = <?php echo $priceGold ?>;
-		document.getElementById('guldPris').innerHTML = "Pris guld: " + price;
+		var guld = <?php echo $goldCount ?>;
+		document.getElementById('guldPris').innerHTML = "Kostnad: " + guld + " gram á 244 kr/gram: " + price + " kr.";
 	}
 	function getSilvercount() {
 		var silver = <?php echo $silverCount ?>;
-		document.getElementById('silver').innerHTML = "Antal silver: " + silver;
+		document.getElementById('silver').innerHTML = "Produkter i varukorgen: " + silver + " gram silver.";
 	}
 	function getSilverprice() {
 		var price = <?php echo $priceSilver ?>;
-		document.getElementById('silverPris').innerHTML = "Pris silver: " + price;
+		var silver = <?php echo $silverCount ?>;
+		document.getElementById('silverPris').innerHTML = "Kostnad: " + silver + " gram á 3.20 kr/gram: " + price + " kr.";
 	}
 	function getTotalprice() {
 		var total = <?php echo $totalPrice ?>;
