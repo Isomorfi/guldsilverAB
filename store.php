@@ -2,11 +2,11 @@
 <?php
 session_start();
 
-if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {	
+if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
 	echo "Inloggad som " . $_SESSION['username'] . ".";
 } else {
 	echo "Du behöver logga in för åtkomst till affären.";
-	header("Location: home.php");	
+	header("Location: home.php");
 	die;
 	
 }
@@ -37,7 +37,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$_SESSION['status'] = 'Basket';
 	}
 	
-	echo $_SESSION['status'];
 
 	if($_SESSION['status'] == 'Ordered') {
 		$_SESSION['status'] = 'Basket';
@@ -64,18 +63,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		echo " Vara tillagd i varukorg.";
 	}
 
-	//$sql = "SELECT ProductID FROM db19880310.OrderItems WHERE OrderID='$orderID'";
-	//	$conn->query($sql);
-	//	$res = mysqli_query($conn, $sql);
-	//	$data = mysqli_fetch_assoc($res);
-	//	$productID = $data['ProductID'];
-	
-	//$sql = "INSERT INTO db19880310.Products (ProductName, ProductID, Price) VALUES ('$product', '$productID', '0')";
-		
-	
-	//if ($conn->query($sql) === TRUE) {
-	//	echo " Vara tillagd i varukorg.";
-	//}
 	
 }
 
@@ -104,26 +91,19 @@ p    {color: blue;}
 
 
 <fieldset>
-<p style="text-align:center;"><img src="https://cdn-3d.niceshops.com/upload/image/product/large/default/fiberlogy-fibersilk-metallic-gold-326274-sv.jpg" alt="Logo" width="150" height="100"></p>
-<form name="form" method="POST">
-<p style="text-align:center;"><label for="fname">99,9% rent guld. Pris 244kr/g.</label></p>
-<p style="text-align:center;"><label for="Guld">Antal gram:</label></p>
-<p style="text-align:center;"><input type="text" id="1" name="1"></p>
+<p style="text-align:center;"><a href="gold.php"><input type="image" src="https://cdn-3d.niceshops.com/upload/image/product/large/default/fiberlogy-fibersilk-metallic-gold-326274-sv.jpg" name="submit" width="250" height="200"/></a></p>
 
-       <p style="text-align:center;"><button type="submit" value="Submit">Köp</button></p>
-     </form>
+<p style="text-align:center;"><a href="gold.php">99,9% rent guld. Pris 244kr/g.</a></p>
+
 </fieldset>
 
 
 <fieldset>
-<p style="text-align:center;"><img src="https://th.bing.com/th/id/R.4647e7752887fe3122b9e7036a0e68ce?rik=nDnCb7zPvrhJXw&pid=ImgRaw&r=0" alt="Logo" width="150" height="100"></p>
-<form name="form" method="POST">
-<p style="text-align:center;"><label for="fname">99,9% rent silver. Pris 6,40kr/g.</label></p>
-<p style="text-align:center;"><label for="Silver">Antal gram:</label></p>
-<p style="text-align:center;"><input type="text" id="2" name="2"></p>
+<p style="text-align:center;"><a href="silver.php"><input type="image" src="https://th.bing.com/th/id/R.4647e7752887fe3122b9e7036a0e68ce?rik=nDnCb7zPvrhJXw&pid=ImgRaw&r=0" name="submit" width="250" height="200"/></a></p>
 
-       <p style="text-align:center;"><button type="submit" value="Submit">Köp</button></p>
-     </form>
+<p style="text-align:center;"><a href="silver.php">99,9% rent silver. Pris 6,40kr/g.</a></p>
+
+
 </fieldset>
 
 

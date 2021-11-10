@@ -38,16 +38,37 @@ p    {color: blue;}
 
 <h1>Guld och silver AB</h1>
 
-<fieldset>
-<form name="form" method="POST">
-<p style="text-align:center;"><label for="username">Användarnamn:</label></p>
-<p style="text-align:center;"><input type="text" id="username" name="username"></p><br>
-<p style="text-align:center;"><label for="password">Lösenord:</label></p>
-<p style="text-align:center;"><input type="text" id="password" name="password"></p><br>
+<?php
+$sql = "SELECT * FROM db19880310.Comments WHERE ProductID='1'";
+$result = mysqli_query($conn, $sql); // First parameter is just return of "mysqli_connect()" function
+//echo "Kundrecensioner: ";
+echo "<br>";
+//echo "<table border='1'>";
+while ($row = mysqli_fetch_assoc($result)) {
+?>
+<center><style type="text/css">
+    .fieldset-auto-width {
+         display: inline-block;
+	text-align:left;
+    }
+</style>
 
+    <fieldset class="fieldset-auto-width">
+    <p>
+<?php
+    echo "<h4>" . $row['Username'] . "&nbsp;" . $row['CommentDate'] . "</h4>";
+    echo "<p>" . $row['Comment'] . "</p>";
+    
+?>
+   </p>
+   </fieldset></center>
+<br>
+<?php
 
-       <p style="text-align:center;"><button type="submit" value="Submit">Logga in</button></p>
-     </form>
+}
+
+?>
+
 </fieldset>
 
 

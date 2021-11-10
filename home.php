@@ -5,7 +5,6 @@ unset($_SESSION['username']);
 
 ?>
 
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,13 +22,7 @@ p    {color: blue;}
 
 <a href="login.php"><button type="submit" value="Submit">Logga in</button></a>
 
-<p style="text-align:center;"><label for="fname">Välkommen till Sveriges minsta e-handelsbutik för guld och silver.
-    <br> Våra produkter består av 99,9% rent guld och silver och utvinns i våra <br> 
-    egna gruvor på Tallvik i Överkalix i norr respektive Kolsva i söder.<br> 
-    Att produkterna utvinns i Sverige och har en så pass hög halt av guld och silver<br> 
-    i kombination med vårat låga pris, som är 50% under marknadsvärde,<br> 
-    gör våra produkter helt unika. <br>
-    <br> För att ta del av våra erbjudanden krävs det att du registrerar ett konto hos oss.</label></p>
+<p style="text-align:center;"><label for="fname">Välkommen till Sveriges minsta e-handelsbutik för guld och silver.<br> Våra produkter består av 99,9% rent guld och silver och utvinns i våra <br> egna gruvor på Tallvik i Överkalix i norr respektive Kolsva i söder.<br> Att produkterna utvinns i Sverige och har en så pass hög halt av guld och silver<br> i kombination med vårat låga pris, som är 50% under marknadsvärde,<br> gör våra produkter helt unika. <br><br> För att ta del av våra erbjudanden krävs det att du registrerar ett konto hos oss.</label></p>
 <br>
 
 
