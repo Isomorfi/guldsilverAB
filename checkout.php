@@ -8,14 +8,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	$password = $_POST['password'];
 
 
-	//$sql = "SELECT losenord FROM db19880310.Kunder WHERE användarnamn='$username'";
-	$sql = "SELECT Password FROM db19880310.Kunder WHERE användarnamn='$username'";
+	$sql = "SELECT losenord FROM db19880310.Kunder WHERE användarnamn='$username'";
 	$res = mysqli_query($conn, $sql);
 	$data = mysqli_fetch_assoc($res);
 	
 	
-	if($password === $data['Password']) {
-	//if($password === $data['losenord']) {
+	if($password === $data['losenord']) {
 		header("Location: store.php");
 		die;
 	} else {
