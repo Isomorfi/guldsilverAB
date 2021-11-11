@@ -6,7 +6,6 @@ include("db_connection.php");
 
 if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {	
 	echo "Inloggad som " . $_SESSION['username'] . ".";
-	// GÖRA SÖKNING OCH RADERA ALLA ORDRAR SOM HAR 0 ???
 } else {
 	echo "Du behöver logga in för åtkomst till affären.";
 	header("Location: home.php");	
@@ -14,62 +13,64 @@ if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
 	
 }
 
+$goldCount = 0;
+$silverCount = 0;
+$totalPrice = 0;
+$priceGold = '';
+$priceSilver = '';
+
+$username = $_SESSION['username'];
+$orderID = '';
+
+// Hämta orderId
+$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
+$res = mysqli_query($conn, $sql);
+$data = mysqli_fetch_assoc($res);
+
+
+if(isset($data)) {
+	$orderID = $data['OrderID'];
+	$_SESSION['OrderID'] = $orderID;
+
+	// Beräknar antal guld och silver produkter
+	calculateGoldSilverCount($conn, $goldCount, $silverCount, $orderID);
+}
+
 if($_SERVER['REQUEST_METHOD'] == "POST") {
     if (isset($_POST['Betala'])) {
-		$username = $_SESSION['username'];
-		$orderID = $_SESSION['OrderID'];
         $sql = "UPDATE db19880310.Orders SET Status='Ordered' WHERE Username='$username' AND OrderID='$orderID'"; 
+		$res = mysqli_query($conn, $sql);
+
+		header("Location: basket.php");	
+		die;
+    }
+
+	//Gör funktion av detta?
+	if (isset($_POST['ChangeGold'])) {
+		$orderID = $_SESSION['OrderID'];
+		$quantity = $_POST['changegold'];
+		echo $quantity;
+        $sql = "UPDATE db19880310.OrderItems SET Quantity='$quantity' WHERE ProductID='1' AND OrderID='$orderID'"; 
 		$res = mysqli_query($conn, $sql);
 		header("Location: basket.php");	
 		die;
     }
-	//Gör funktion av detta?
-    if (isset($_POST['ChangeGold'])) {
-	$orderID = $_SESSION['OrderID'];
-	$quantity = $_POST['changegold'];
-	echo $quantity;
-        $sql = "UPDATE db19880310.OrderItems SET Quantity='$quantity' WHERE ProductID='1' AND OrderID='$orderID'"; 
-	$res = mysqli_query($conn, $sql);
-	header("Location: basket.php");	
-	die;
-    }
     if (isset($_POST['ChangeSilver'])) {
-	$orderID = $_SESSION['OrderID'];
-	$quantity = $_POST['changesilver'];
+		$orderID = $_SESSION['OrderID'];
+		$quantity = $_POST['changesilver'];
         $sql = "UPDATE db19880310.OrderItems SET Quantity='$quantity' WHERE ProductID='2' AND OrderID='$orderID'"; 
-	$res = mysqli_query($conn, $sql);
-	header("Location: basket.php");	
-	die;
+		$res = mysqli_query($conn, $sql);
+		header("Location: basket.php");	
+		die;
     }
 }
-	
 
 
-	$username = $_SESSION['username'];
-	$orderID = '';
-	$quantity = '';
-	
-	// Hämta orderId
-	$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
-	$res = mysqli_query($conn, $sql);
-	$data = mysqli_fetch_assoc($res);
-
-	$goldCount = 0;
-	$silverCount = 0;
-	$totalPrice = 0;
-	$priceGold = '';
-	$priceSilver = '';
-
-if(isset($data)) {
-	
-	$orderID = $data['OrderID'];
-	$_SESSION['OrderID'] = $orderID;
-	
+function calculateGoldSilverCount($conn, &$goldCount, &$silverCount, $orderID) {
 	// Hämta alla produkter som hör till orderId
 	$sql = "SELECT * FROM db19880310.OrderItems WHERE OrderID='$orderID'";
 	$res = mysqli_query($conn, $sql);
 
-	
 	$productID = '';
 	$quantity = '';
 
@@ -84,13 +85,14 @@ if(isset($data)) {
 		if($productID == '2') {
 			$silverCount += $quantity;
 		}
-	}
+	}	
+}
+
 
 
 	// Hämta pris på produkterna
 	$sql = "SELECT ProductID, Price FROM db19880310.Products WHERE ProductID='1' OR ProductID='2'";
 	$res = mysqli_query($conn, $sql);
-
 
 	while($data = mysqli_fetch_assoc($res)) {
 		if($data['ProductID'] == '1') {
@@ -117,17 +119,31 @@ if(isset($data)) {
 
 	$sql = "DELETE FROM db19880310.OrderItems WHERE OrderID='$orderID'";
 	$res = mysqli_query($conn, $sql);
-
-
-	$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
+		
+	// Lägg bara till antalet guld produkter i databas om det är fler än 0 i kundvagnen
+	if($goldCount > 0) {
+		$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
 			VALUES ('$orderID', '1', $goldCount)";
-	$res = mysqli_query($conn, $sql);	
-
-
-	$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
+		$res = mysqli_query($conn, $sql);	
+	}
+	
+	// Lägg bara till antalet silver produkter i databas om det är fler än 0 i kundvagnen
+	if($silverCount > 0) {	
+		$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
 			VALUES ('$orderID', '2', $silverCount)";
-	$res = mysqli_query($conn, $sql);	
-}
+		$res = mysqli_query($conn, $sql);
+	}
+
+	// Inga varor i kundvagnen, ta bort kundvagnen
+	if($goldCount == 0 && $silverCount == 0) {		
+		$sql = "DELETE FROM db19880310.Orders WHERE OrderID='$orderID'";
+		$res = mysqli_query($conn, $sql);
+	}
+		
+
+
+
+
 ?>
 
 
@@ -159,8 +175,15 @@ if($goldCount > 0) {
 <fieldset>
 <center>
 <div style="width:500px;">
-  <div style="width:200px; float:left;"><p style="text-align:center;">
-<a href="gold.php"><input type="image" src="https://cdn-3d.niceshops.com/upload/image/product/large/default/fiberlogy-fibersilk-metallic-gold-326274-sv.jpg" name="submit" width="200" height="150"/></a></p>
+  <div style="width:200px; float:left;"><p style="text-align:center;"><a href="gold.php"><input type="image" 
+	<?php
+	// Hämtar bild source från databas
+		$sql = "SELECT PicSrc FROM db19880310.Products WHERE ProductID='1'";
+		$res = mysqli_query($conn, $sql);
+		$data = mysqli_fetch_assoc($res);
+	?>
+	src="<?php echo $data['PicSrc'] ?>" 
+	name="submit" width="200" height="150"/></a></p>
 </div></center>
   <div style="width:700px; float:right;"><p><a href="gold.php">99,9% rent guld.</a></p><p style="text-decoration: underline;"><label id="guld"></label></p>
 <p style="text-decoration: underline;"><label id="guldPris"></label></p>
@@ -188,7 +211,15 @@ if($silverCount > 0) {
 <fieldset>
 <center>
 <div style="width:500px;">
-  <div style="width:200px; float:left;"><a href="silver.php"><input type="image" src="https://th.bing.com/th/id/R.4647e7752887fe3122b9e7036a0e68ce?rik=nDnCb7zPvrhJXw&pid=ImgRaw&r=0" name="submit" width="200" height="150"/></a></p>
+  	<div style="width:200px; float:left;"><a href="silver.php"><input type="image" 
+  	<?php
+	// Hämtar bild source från databas
+		$sql = "SELECT PicSrc FROM db19880310.Products WHERE ProductID='2'";
+		$res = mysqli_query($conn, $sql);
+		$data = mysqli_fetch_assoc($res);
+	?>
+	src="<?php echo $data['PicSrc'] ?>" 
+  	name="submit" width="200" height="150"/></a></p>
 </div></center>
   <div style="width:700px; float:right;"><p><a href="silver.php">99,9% rent silver.</a></p><p style="text-decoration: underline;"><label id="silver"></label></p>
 <p style="text-decoration: underline;"><label id="silverPris"></label></p>
