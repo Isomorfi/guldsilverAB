@@ -1,4 +1,5 @@
 
+
 <?php
 session_start();
 include("db_connection.php");
@@ -26,61 +27,58 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	if (isset($_POST['Recension'])) {
 		$username = $_SESSION['username'];
 		//$orderID = $_SESSION['OrderID'];
-	
-		$comment = $_POST['comment'];
-		
+		$comment = $_POST['comment'];		
 
 		$sql = "INSERT INTO db19880310.Comments (Comment, Username, ProductID) VALUES ('$comment', '$username', '$productID')";  
-		$conn->query($sql);
-			
+		$conn->query($sql);		
 		
 	}
 
         
-    	
-
-	foreach ($_POST as $name => $value) {
-   		$quantity = $value; 
-   		$productID = $name;
-	}
-
-	$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
-	$res = mysqli_query($conn, $sql);
-	$data = mysqli_fetch_assoc($res);
-	
-	if(!isset($data['OrderID'])) {
-		$_SESSION['status'] = 'Ordered';
-	}
-	else {
-		$orderID = $data['OrderID'];
-		$_SESSION['status'] = 'Basket';
-	}
-	
-
-	if($_SESSION['status'] == 'Ordered') {
-		$_SESSION['status'] = 'Basket';
+	if(isset($_POST['buy']))  {
+		$quantity = $_POST['2'];
 		
-		$sql = "INSERT INTO db19880310.Orders (Username, Status)
-			VALUES ('$username', '".$_SESSION['status']."')";
-		$conn->query($sql);
+		if($quantity > 0 && $_SESSION['Stock'] >= $quantity) {
 
-		$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
-		$conn->query($sql);
-		$res = mysqli_query($conn, $sql);
-		$data = mysqli_fetch_assoc($res);
-		$orderID = $data['OrderID'];
+			$newStock = $_SESSION['Stock'] - $quantity;
 			
-	} 
+			$sql = "UPDATE db19880310.Products SET Stock='$newStock' WHERE ProductID='2'";
+			$conn->query($sql);
 
-	
+			$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
+			$res = mysqli_query($conn, $sql);
+			$data = mysqli_fetch_assoc($res);
+		
+			if(!isset($data['OrderID'])) {
+				$_SESSION['status'] = 'Ordered';
+			}
+			else {
+				$orderID = $data['OrderID'];
+				$_SESSION['status'] = 'Basket';
+			}
+		
 
-	
-	
-	$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
-		VALUES ('$orderID', '$productID', '$quantity')";
-	$conn->query($sql);
-	
+			if($_SESSION['status'] == 'Ordered') {
+				$_SESSION['status'] = 'Basket';
+				
+				$sql = "INSERT INTO db19880310.Orders (Username, Status)
+					VALUES ('$username', '".$_SESSION['status']."')";
+				$conn->query($sql);
 
+				$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
+				$conn->query($sql);
+				$res = mysqli_query($conn, $sql);
+				$data = mysqli_fetch_assoc($res);
+				$orderID = $data['OrderID'];
+				
+			} 
+		
+			$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
+				VALUES ('$orderID', '$productID', '$quantity')";
+			$conn->query($sql);
+		}
+	
+	}
 	
 }
 
@@ -109,16 +107,25 @@ h4   {color: red;}
 
 <a href="basket.php"><input type="image" src="https://purepng.com/public/uploads/large/purepng.com-shopping-cartshoppingcarttrolleycarriagebuggysupermarkets-1421526532323sy0um.png" name="submit" width="60" height="60"/></a>
 
-
+<?php
+$sql = "SELECT Stock FROM db19880310.Products WHERE ProductID='2'";
+$conn->query($sql);
+$res = mysqli_query($conn, $sql);
+$data = mysqli_fetch_assoc($res);
+$_SESSION['Stock'] = $data['Stock'];
+?>
 
 <fieldset>
 <center><h1>Silver</h1></center>
 <p style="text-align:center;"><img src="https://th.bing.com/th/id/R.4647e7752887fe3122b9e7036a0e68ce?rik=nDnCb7zPvrhJXw&pid=ImgRaw&r=0" alt="Logo" width="250" height="200"></p>
 <form name="form" method="POST">
-<p style="text-align:center;"><label for="fname">99,9% rent silver. Utvunnet och producerat i den västmanländska <br> bruksortsidyllen Kolsva med anor från 1500-talet. Samhällets järnproduktion <br> under 1500-talet har satt sina spår och gett vårat silver unika egenskaper. <br><br> Pris 3.20kr/g.</label></p>
+<p style="text-align:center;"><label for="fname">99,9% rent silver. Utvunnet och producerat i den västmanländska <br> 
+bruksortsidyllen Kolsva med anor från 1500-talet. Samhällets järnproduktion <br> 
+under 1500-talet har satt sina spår och gett vårat silver unika egenskaper. <br>
+<br>Antal i lager: <?php echo $_SESSION['Stock'], " gram."; ?><br><br> Pris 3.20kr/g.</label></p>
 
 <?php
-if($quantity > 0) {
+if($quantity > 0 && $_SESSION['Stock'] >= $quantity) {
 ?>
     <h4 style="text-align:center;"><label><?php echo $quantity, " gram är tillagt i varukorgen!"; ?></label></h4>
 <?php
@@ -126,7 +133,7 @@ if($quantity > 0) {
 ?>
 
 <p style="text-align:center;"><label for="Silver">Antal gram: </label><input type="text" id="2" name="2">
-<button type="submit" value="Submit">Köp</button></p>
+<button type="submit" name="buy" value="Submit">Köp</button></p>
      </form>
 </fieldset>
 

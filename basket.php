@@ -40,6 +40,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     if (isset($_POST['Betala'])) {
         $sql = "UPDATE db19880310.Orders SET Status='Ordered' WHERE Username='$username' AND OrderID='$orderID'"; 
 		$res = mysqli_query($conn, $sql);
+	$sql = "UPDATE db19880310.Orders SET orderDate=CURRENT_TIMESTAMP WHERE Username='$username' AND OrderID='$orderID'"; 
+		$res = mysqli_query($conn, $sql);
 
 		header("Location: basket.php");	
 		die;
@@ -49,19 +51,54 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	if (isset($_POST['ChangeGold'])) {
 		$orderID = $_SESSION['OrderID'];
 		$quantity = $_POST['changegold'];
-		echo $quantity;
-        $sql = "UPDATE db19880310.OrderItems SET Quantity='$quantity' WHERE ProductID='1' AND OrderID='$orderID'"; 
+
+		
+		$sql = "SELECT Stock FROM db19880310.Products WHERE ProductID='1'";
+		$conn->query($sql);
 		$res = mysqli_query($conn, $sql);
-		header("Location: basket.php");	
-		die;
+		$data = mysqli_fetch_assoc($res);
+		$stock = $data['Stock'];
+
+
+		if($quantity >= 0 && $stock >= $quantity) {
+
+			$diff = $goldCount - $quantity;
+			
+			$newStock = $stock + $diff;
+			
+			$sql = "UPDATE db19880310.Products SET Stock='$newStock' WHERE ProductID='1'";
+			$conn->query($sql);
+
+        			$sql = "UPDATE db19880310.OrderItems SET Quantity='$quantity' WHERE ProductID='1' AND OrderID='$orderID'"; 
+			$res = mysqli_query($conn, $sql);
+			header("Location: basket.php");	
+			die;
+		}
     }
     if (isset($_POST['ChangeSilver'])) {
 		$orderID = $_SESSION['OrderID'];
 		$quantity = $_POST['changesilver'];
-        $sql = "UPDATE db19880310.OrderItems SET Quantity='$quantity' WHERE ProductID='2' AND OrderID='$orderID'"; 
+
+		$sql = "SELECT Stock FROM db19880310.Products WHERE ProductID='2'";
+		$conn->query($sql);
 		$res = mysqli_query($conn, $sql);
-		header("Location: basket.php");	
-		die;
+		$data = mysqli_fetch_assoc($res);
+		$stock = $data['Stock'];
+		
+		if($quantity >= 0 && $stock >= $quantity) {
+
+			$diff = $silverCount - $quantity;
+			
+			$newStock = $stock + $diff;
+			
+			$sql = "UPDATE db19880310.Products SET Stock='$newStock' WHERE ProductID='2'";
+			$conn->query($sql);			
+
+        			$sql = "UPDATE db19880310.OrderItems SET Quantity='$quantity' WHERE ProductID='2' AND OrderID='$orderID'"; 
+			$res = mysqli_query($conn, $sql);
+			header("Location: basket.php");	
+			die;
+		}
     }
 }
 

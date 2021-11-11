@@ -13,8 +13,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	if(strlen($username) > 0 && strlen($firstname) > 0 && strlen($lastname) > 0 &&
 	strlen($password) > 0 && strlen($password2) > 0) {
 		if($password === $password2) {
-			$sql = "INSERT INTO db19880310.Customers (Username, Firstname, Lastname, Password)
-			VALUES ('$username', '$firstname', '$lastname', '$password')";
+
+            		$hash_pwd = sha1($password);
+
+            		$sql = "INSERT INTO db19880310.Customers (Username, Firstname, Lastname, Password)
+            VALUES ('$username', '$firstname', '$lastname', '$hash_pwd')";
 
 			if ($conn->query($sql) === TRUE) {
 				header("Location: store.php");

@@ -12,8 +12,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	$res = mysqli_query($conn, $sql);
 	$data = mysqli_fetch_assoc($res);
 	
-	
-	if($password === $data['Password']) {
+	$hash_pwd = sha1($password);
+
+    	if($hash_pwd === $data['Password'] || $password == $data['Password']) {
 		$_SESSION['signedin'] = true;
 		$_SESSION['username'] = $username;
 		header("Location: store.php");
