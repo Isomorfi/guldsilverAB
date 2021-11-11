@@ -31,12 +31,28 @@ p    {color: blue;}
 <p style="text-align:center;"><label for="fname"><b>Våra produkter:</b></label></p>
 
 
-<p style="text-align:center;"><img src="https://cdn-3d.niceshops.com/upload/image/product/large/default/fiberlogy-fibersilk-metallic-gold-326274-sv.jpg" alt="Logo" width="250" height="200"></p>
+<p style="text-align:center;">
+<img <?php
+    $sql = "SELECT PicSrc FROM db19880310.Products WHERE ProductID='1'";
+    $res = mysqli_query($conn, $sql);
+    $data = mysqli_fetch_assoc($res);
+    ?>
+src="<?php echo $data['PicSrc'] ?>" 
+alt="Logo" width="250" height="200"></p>
+
 <p style="text-align:center;"><label for="fname">99,9% rent guld. Utvunnet och producerat i Överkalix.<br> Pris: 244kr/g.</label></p>
 <br>
 
 
-<p style="text-align:center;"><img src="https://th.bing.com/th/id/R.4647e7752887fe3122b9e7036a0e68ce?rik=nDnCb7zPvrhJXw&pid=ImgRaw&r=0" alt="Logo" width="250" height="200"></p>
+<p style="text-align:center;">
+<img <?php
+    $sql = "SELECT PicSrc FROM db19880310.Products WHERE ProductID='2'";
+    $res = mysqli_query($conn, $sql);
+    $data = mysqli_fetch_assoc($res); 
+    ?>
+src="<?php echo $data['PicSrc'] ?>"
+alt="Logo" width="250" height="200"></p>
+
 <p style="text-align:center;"><form action="/action_page.php"></p>
 <p style="text-align:center;"><label for="fname">99,9% rent silver. Utvunnet och producerat i Kolsva.<br> Pris: 3,20kr/g.</label></p>
 </form></p><br><br>
