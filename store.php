@@ -91,7 +91,14 @@ p    {color: blue;}
 
 
 <fieldset>
-<p style="text-align:center;"><a href="gold.php"><input type="image" src="https://cdn-3d.niceshops.com/upload/image/product/large/default/fiberlogy-fibersilk-metallic-gold-326274-sv.jpg" name="submit" width="250" height="200"/></a></p>
+<p style="text-align:center;"><a href="gold.php"><input type="image" 
+<?php
+$sql = "SELECT PicSrc FROM db19880310.Products WHERE ProductID='1'";
+$res = mysqli_query($conn, $sql);
+$data = mysqli_fetch_assoc($res);
+?>
+src="<?php echo $data['PicSrc'] ?>" 
+name="submit" width="250" height="200"/></a></p>
 
 <p style="text-align:center;"><a href="gold.php">99,9% rent guld. Pris 244kr/g.</a></p>
 
@@ -99,10 +106,16 @@ p    {color: blue;}
 
 
 <fieldset>
-<p style="text-align:center;"><a href="silver.php"><input type="image" src="https://th.bing.com/th/id/R.4647e7752887fe3122b9e7036a0e68ce?rik=nDnCb7zPvrhJXw&pid=ImgRaw&r=0" name="submit" width="250" height="200"/></a></p>
+<p style="text-align:center;"><a href="silver.php"><input type="image" 
+<?php
+$sql = "SELECT PicSrc FROM db19880310.Products WHERE ProductID='2'";
+$res = mysqli_query($conn, $sql);
+$data = mysqli_fetch_assoc($res);
+?>
+src="<?php echo $data['PicSrc'] ?>" 
+name="submit" width="250" height="200"/></a></p>
 
 <p style="text-align:center;"><a href="silver.php">99,9% rent silver. Pris 6,40kr/g.</a></p>
-
 
 </fieldset>
 
