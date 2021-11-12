@@ -1,7 +1,16 @@
 <?php
 session_start();
+include("db_connection.php");
 unset($_SESSION['signedin']);
 unset($_SESSION['username']);
+unset($_SESSION['firstname']);
+unset($_SESSION['lastname']);
+unset($_SESSION['address']);
+unset($_SESSION['zip']);
+unset($_SESSION['city']);
+unset($_SESSION['country']);
+unset($_SESSION['email']);
+unset($_SESSION['phone']);
 
 ?>
 

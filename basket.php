@@ -38,12 +38,13 @@ if(isset($data)) {
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
     if (isset($_POST['Betala'])) {
+	$_SESSION['orderID'] = $orderID;
         $sql = "UPDATE db19880310.Orders SET Status='Ordered' WHERE Username='$username' AND OrderID='$orderID'"; 
 		$res = mysqli_query($conn, $sql);
 	$sql = "UPDATE db19880310.Orders SET orderDate=CURRENT_TIMESTAMP WHERE Username='$username' AND OrderID='$orderID'"; 
 		$res = mysqli_query($conn, $sql);
 
-		header("Location: basket.php");	
+		header("Location: checkout.php");	
 		die;
     }
 
