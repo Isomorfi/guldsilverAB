@@ -15,80 +15,34 @@ if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
 
  
 
-$_SESSION['username'] = '';
-	$_SESSION['firstname'] = '';
-	$_SESSION['lastname'] = '';
-	$_SESSION['address'] = '';
-	$_SESSION['zip'] = '';
-	$_SESSION['city'] = '';
-	$_SESSION['country'] = '';
-	$_SESSION['email'] = '';
-	$_SESSION['phone'] = '';
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
-	$username = $_POST['username'];
-	$firstname = $_POST['firstname'];
-	$lastname = $_POST['lastname'];
-	$password = $_POST['password'];
-	$password2 = $_POST['password2'];
-	$ssn = $_POST['persnr'];
+	$username = $_SESSION['username'];
+	$oldpassword = $_POST['oldpassword'];
+	$newpassword = $_POST['newpassword'];
+	$newpassword2 = $_POST['newpassword2'];
 	
 
-	$_SESSION['username'] = $_POST['username'];
-	$_SESSION['firstname'] = $_POST['firstname'];
-	$_SESSION['lastname'] = $_POST['lastname'];
-	$_SESSION['address'] = $_POST['address'];
-	$_SESSION['zip'] = $_POST['zip'];
-	$_SESSION['city'] = $_POST['city'];
-	$_SESSION['country'] = $_POST['country'];
-	$_SESSION['email'] = $_POST['email'];
-	$_SESSION['phone'] = $_POST['phone'];
+	$sql = "SELECT Password FROM db19880310.Customers WHERE Username='$username'";
+	$res = mysqli_query($conn, $sql);
+	$data = mysqli_fetch_assoc($res);
 	
+	$hash_pwd = sha1($oldpassword);
 
-
-        
-	if(strlen($username) > 0 && strlen($firstname) > 0 && strlen($lastname) > 0 &&
-	strlen($password) > 0 && strlen($password2) > 0 && strlen($_SESSION['address']) > 0 && strlen($_SESSION['zip']) > 0 && strlen($_SESSION['city']) > 0 &&
-	strlen($_SESSION['country']) > 0 && strlen($_SESSION['email']) > 0 && strlen($_SESSION['phone']) > 0) {
-		if($password === $password2) {
-                    if(is_numeric($ssn) && strlen($ssn) == 10) {
-                        if(is_numeric($_SESSION['zip'])) {
-                            if(is_numeric($_SESSION['phone'])) {
-                                if(isset($_POST['checkbox_name'])) {
-				$hash_pwd = sha1($password);
-
-                            $sql = "INSERT INTO db19880310.Customers (Username, Firstname, Lastname, Password, SSN, Address, ZIP, City, Country, Email, Phone)
-                VALUES ('$username', '$firstname', '$lastname', '$hash_pwd', '$ssn', '".$_SESSION['address']."', '".$_SESSION['zip']."', '".$_SESSION['city']."', '".$_SESSION['country']."', '".$_SESSION['email']."', '".$_SESSION['phone']."')";
-
-                            	if ($conn->query($sql) === TRUE) {
-					header("Location: store.php");
-					die;
-                            	} else {
-					echo "Användarnamnet är redan upptaget. Välj ett annat.";
-                            	}
-                            } else {
-                                echo "Felaktigt angivet telefonnummer.";
-                            }
-			
-			} else {
-				echo "Du måste godkänna villkoren.";
-			}
-                            
-                        } else {
-                            echo "Felaktigt angivet postnummer.";
-                        }
-                        
-                    } else {
-                        echo "Felaktigt angivet personnummer.";
-                    }
-
-            		
+    	if($hash_pwd === $data['Password'] || $oldpassword == $data['Password']) {
+		if($newpassword === $newpassword2) {
+			$hash_pwd = sha1($newpassword);
+			$sql = "UPDATE db19880310.Customers SET Password='$hash_pwd' WHERE Username='$username'";
+			$res = mysqli_query($conn, $sql);
 		} else {
-			echo "Lösenord överenstämmer inte.";
+			echo "Lösenord överensstämmer inte.";
 		}
+		header("Location: changePassword.php");
+		die;
 	} else {
-		echo "Fält kan ej lämnas tomma!";
+		echo "Felaktigt lösenord.";
 	}
+	
 }
 
 ?>
@@ -115,11 +69,11 @@ p    {color: blue;}
 <form name="form" method="POST">
 <center>
 <p style="text-align:center;"><label for="username">Nuvarande lösenord:</label></p>
-<p style="text-align:center;"><input type="text" id="username" value="<?php echo $_SESSION['username']?>" name="username"></p>
+<p style="text-align:center;"><input type="password" id="oldpassword" name="oldpassword"></p>
 <p style="text-align:center;"><label for="password">Nytt lösenord:</label></p>
-<p style="text-align:center;"><input type="text" id="persnr" name="persnr"></p>
+<p style="text-align:center;"><input type="password" id="newpassword" name="newpassword"></p>
 <p style="text-align:center;"><label for="firstname">Nytt lösenord:</label></p>
-<p style="text-align:center;"><input type="text" id="firstname" value="<?php echo $_SESSION['firstname']?>" name="firstname"></p>
+<p style="text-align:center;"><input type="password" id="newpassword2" name="newpassword2"></p>
 </center>
 
 
