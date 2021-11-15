@@ -13,6 +13,10 @@ if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
 	
 }
 
+if(isset($_GET['OrderID'])){
+    $_SESSION['orderID'] = $_GET['OrderID'];
+}
+
 
 
 
@@ -39,8 +43,10 @@ h3   {color: red;}
 
 
 <?php
-$username = $_SESSION['username'];
 
+   
+
+$username = $_SESSION['username'];
 
 
 $sql = "SELECT Firstname, Lastname, Address, ZIP, City, Country FROM db19880310.Customers WHERE Username='$username'";

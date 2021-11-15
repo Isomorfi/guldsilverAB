@@ -41,7 +41,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	$_SESSION['orderID'] = $orderID;
         $sql = "UPDATE db19880310.Orders SET Status='Ordered' WHERE Username='$username' AND OrderID='$orderID'"; 
 		$res = mysqli_query($conn, $sql);
-	$sql = "UPDATE db19880310.Orders SET orderDate=CURRENT_TIMESTAMP WHERE Username='$username' AND OrderID='$orderID'"; 
+
+	$sql = "UPDATE db19880310.Orders SET orderDate=CURRENT_TIMESTAMP, TotalCost='".$_SESSION['totalPrice']."' WHERE Username='$username' AND OrderID='$orderID'"; 
 		$res = mysqli_query($conn, $sql);
 
 		header("Location: checkout.php");	
@@ -153,6 +154,7 @@ function calculateGoldSilverCount($conn, &$goldCount, &$silverCount, $orderID) {
 	}
 
 	$totalPrice = $priceGold + $priceSilver;
+	$_SESSION['totalPrice'] = $totalPrice;
 
 
 	$sql = "DELETE FROM db19880310.OrderItems WHERE OrderID='$orderID'";

@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 
@@ -49,8 +50,9 @@ p    {color: blue;}
 <p style="text-align:center;"><input type="password" id="password" name="password"></p><br>
 
 
-       <p style="text-align:center;"><button type="submit" value="Submit">Logga in</button></p>
-     </form>
+       <p style="text-align:center;"><button type="submit" name="login" value="Submit">Logga in</button></p>
+     </form><br>
+<a href="forgotpassword.php"><button type="submit" name="forgot" value="Submit">Glömt lösenord</button></a>
 </fieldset>
 
 

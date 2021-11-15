@@ -1,28 +1,26 @@
 <?php
-session_start();
 
+session_start();
 include("db_connection.php");
 
-if($_SERVER['REQUEST_METHOD'] == "POST") {
-	$username = $_POST['username'];
-	$password = $_POST['password'];
 
-
-	$sql = "SELECT losenord FROM db19880310.Kunder WHERE användarnamn='$username'";
-	$res = mysqli_query($conn, $sql);
-	$data = mysqli_fetch_assoc($res);
-	
-	
-	if($password === $data['losenord']) {
-		header("Location: store.php");
-		die;
-	} else {
-		echo "Wrong password or username";
-	}
+if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {	
+	echo "Inloggad som " . $_SESSION['username'] . ".";
+} else {
+	echo "Du behöver logga in för åtkomst till affären.";
+	header("Location: home.php");	
+	die;
 	
 }
 
+ 
+
+
+
+
+
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -36,41 +34,23 @@ p    {color: blue;}
 </head>
 <body>
 
-<h1>Guld och silver AB</h1>
+<h1>Guld och silver AB - Mina sidor</h1>
 
-<?php
-$sql = "SELECT * FROM db19880310.Comments WHERE ProductID='1'";
-$result = mysqli_query($conn, $sql); // First parameter is just return of "mysqli_connect()" function
-//echo "Kundrecensioner: ";
-echo "<br>";
-//echo "<table border='1'>";
-while ($row = mysqli_fetch_assoc($result)) {
-?>
-<center><style type="text/css">
-    .fieldset-auto-width {
-         display: inline-block;
-	text-align:left;
-    }
-</style>
 
-    <fieldset class="fieldset-auto-width">
-    <p>
-<?php
-    echo "<h4>" . $row['Username'] . "&nbsp;" . $row['CommentDate'] . "</h4>";
-    echo "<p>" . $row['Comment'] . "</p>";
-    
-?>
-   </p>
-   </fieldset></center>
+<a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
+
+<a href="store.php"><button type="submit" value="Submit">Produkter</button></a><br>
+<center>
+
 <br>
-<?php
+<br>
+<a href="myOrders.php"><button type="submit" value="Submit">Mina beställningar</button></a>
+<br>
+<br>
+<br>
+<a href="changePassword.php"><button type="submit" value="Submit">Ändra lösenord</button></a>
 
-}
-
-?>
-
-</fieldset>
-
+</center>
 
 </body>
 </html>
