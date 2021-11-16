@@ -48,6 +48,10 @@ p    {color: blue;}
 <br>
 <br>
 <br>
+<a href="changeInfo.php"><button type="submit" value="Submit">Ändra konto</button></a>
+<br>
+<br>
+<br>
 <a href="changePassword.php"><button type="submit" value="Submit">Ändra lösenord</button></a>
 
 </center>

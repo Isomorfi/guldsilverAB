@@ -119,7 +119,7 @@ $totPrice = $totPrice + $price;
   	name="submit" width="200" height="150"/></p>
 </div>
 
-<div style="width:350px; float:left;"><p><label id="silver">99,9% rent <?php echo $data3['ProductName']?>. <br><br>Antal gram: <?php echo $data['Quantity']?>. <br><br>Kostnad: <?php echo $price?> kr.</label></p>
+<div style="width:350px; float:left;"><p><label id="silver"><br>99,9% rent <?php echo $data3['ProductName']?>. <br><br>Antal gram: <?php echo $data['Quantity']?>. <br><br>Kostnad: <?php echo $price?> kr.</label></p>
 
 
 

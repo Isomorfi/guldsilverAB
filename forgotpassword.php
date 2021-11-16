@@ -30,7 +30,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$headers.= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 		$headers.= "X-Priority: 1\r\n";
 		
-                $txt = "Här kommer ditt bortglömda lösenord!" . "\r\n" . "$password" . "\r\n" . "När du har lyckats kryptera det så kan du logga in igen." . "\r\n" . "Hälsningar vi på Guld och silver AB"";
+                $txt = "Här kommer ditt bortglömda lösenord!" . "\r\n" . "$password" . "\r\n" . "När du har lyckats kryptera det så kan du logga in igen." . "\r\n" . "Hälsningar vi på Guld och silver AB";
               
 
                 $sendMail = mail($to,$subject,$txt,$headers);
