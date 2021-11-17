@@ -93,14 +93,15 @@ p    {color: blue;}
 <fieldset>
 <p style="text-align:center;"><a href="gold.php"><input type="image" 
 <?php
-$sql = "SELECT PicSrc FROM db19880310.Products WHERE ProductID='1'";
+$sql = "SELECT Price, PicSrc FROM db19880310.Products WHERE ProductID='1'";
 $res = mysqli_query($conn, $sql);
 $data = mysqli_fetch_assoc($res);
+
 ?>
 src="<?php echo $data['PicSrc'] ?>" 
 name="submit" width="250" height="200"/></a></p>
 
-<p style="text-align:center;"><a href="gold.php">99,9% rent guld. Pris 244kr/g.</a></p>
+<p style="text-align:center;"><a href="gold.php">99,9% rent guld. Pris <?php echo $data['Price'] ?>kr/g.</a></p>
 
 </fieldset>
 
@@ -108,14 +109,14 @@ name="submit" width="250" height="200"/></a></p>
 <fieldset>
 <p style="text-align:center;"><a href="silver.php"><input type="image" 
 <?php
-$sql = "SELECT PicSrc FROM db19880310.Products WHERE ProductID='2'";
+$sql = "SELECT Price, PicSrc FROM db19880310.Products WHERE ProductID='2'";
 $res = mysqli_query($conn, $sql);
 $data = mysqli_fetch_assoc($res);
 ?>
 src="<?php echo $data['PicSrc'] ?>" 
 name="submit" width="250" height="200"/></a></p>
 
-<p style="text-align:center;"><a href="silver.php">99,9% rent silver. Pris 6,40kr/g.</a></p>
+<p style="text-align:center;"><a href="silver.php">99,9% rent silver. Pris <?php echo $data['Price'] ?>kr/g.</a></p>
 
 </fieldset>
 

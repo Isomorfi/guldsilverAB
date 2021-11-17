@@ -96,13 +96,13 @@ while ($data = mysqli_fetch_assoc($res)) {
 
 if(isset($data['ProductID'])) {
 $productID = $data['ProductID'];
-$sql3 = "SELECT ProductName, Price FROM Products WHERE ProductID='$productID'";
+$sql3 = "SELECT ProductName FROM Products WHERE ProductID='$productID'";
 $res3 = mysqli_query($conn, $sql3);
 $data3 = mysqli_fetch_assoc($res3);
 
-$price = $data3['Price'] * $data['Quantity'];
+//$price = $data3['Price'] * $data['Quantity'];
 
-$totPrice = $totPrice + $price;
+//$totPrice = $totPrice + $price;
 
 ?>
 <fieldset>
@@ -119,7 +119,7 @@ $totPrice = $totPrice + $price;
   	name="submit" width="200" height="150"/></p>
 </div>
 
-<div style="width:350px; float:left;"><p><label id="silver"><br>99,9% rent <?php echo $data3['ProductName']?>. <br><br>Antal gram: <?php echo $data['Quantity']?>. <br><br>Kostnad: <?php echo $price?> kr.</label></p>
+<div style="width:350px; float:left;"><p><label id="silver"><br>99,9% rent <?php echo $data3['ProductName']?>. <br><br>Antal gram: <?php echo $data['Quantity']?>. <br><br>Kostnad: <?php echo $data['TotalCost']?> kr.</label></p>
 
 
 
@@ -132,8 +132,11 @@ $totPrice = $totPrice + $price;
 <?php
 }
 }
+$sql3 = "SELECT TotalCost FROM Orders WHERE OrderID='$orderID'";
+$res3 = mysqli_query($conn, $sql3);
+$data3 = mysqli_fetch_assoc($res3);
 ?>
-<p style="text-align:center;">Orderkostnad: <?php echo $totPrice?> kr.</p>
+<p style="text-align:center;">Orderkostnad: <?php echo $data3['TotalCost']?> kr.</p>
 
    
    </fieldset></center>

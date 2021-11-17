@@ -68,20 +68,21 @@ $Quan = $Quan + $data['Quantity'];
 
 <p style="text-align:center;">
 <img <?php
-    $sql = "SELECT PicSrc FROM db19880310.Products WHERE ProductID='1'";
+    $sql = "SELECT Price, PicSrc FROM db19880310.Products WHERE ProductID='1'";
     $res = mysqli_query($conn, $sql);
     $data = mysqli_fetch_assoc($res);
     ?>
 src="<?php echo $data['PicSrc'] ?>" 
 alt="Logo" width="250" height="200"></p>
 
-<p style="text-align:center;"><label for="fname">99,9% rent guld. Utvunnet och producerat i Överkalix.<br> Pris: 244kr/g.</label></p>
+<p style="text-align:center;"><label for="fname">99,9% rent guld. Utvunnet och producerat i Överkalix.
+    <br> Pris: <?php echo $data['Price'] ?>kr/g.</label></p>
 <br>
 
 
 <p style="text-align:center;">
 <img <?php
-    $sql = "SELECT PicSrc FROM db19880310.Products WHERE ProductID='2'";
+    $sql = "SELECT Price, PicSrc FROM db19880310.Products WHERE ProductID='2'";
     $res = mysqli_query($conn, $sql);
     $data = mysqli_fetch_assoc($res); 
     ?>
@@ -89,7 +90,8 @@ src="<?php echo $data['PicSrc'] ?>"
 alt="Logo" width="250" height="200"></p>
 
 <p style="text-align:center;"><form action="/action_page.php"></p>
-<p style="text-align:center;"><label for="fname">99,9% rent silver. Utvunnet och producerat i Kolsva.<br> Pris: 3,20kr/g.</label></p>
+<p style="text-align:center;"><label for="fname">99,9% rent silver. Utvunnet och producerat i Kolsva.
+    <br> Pris: <?php echo $data['Price'] ?>kr/g.</label></p>
 </form></p><br><br>
 <br><br>
 <p style="text-align:center;"><?php echo "Sedan 2021-11-09 : " . $num . " nya användare - " . $Quan . " sålda produkter."?></p>
