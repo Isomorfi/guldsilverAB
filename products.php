@@ -14,13 +14,17 @@ if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
 	
 }
 
+if(isset($_GET['ProductID'])){
+    $_SESSION['ProductID'] = $_GET['ProductID'];
+}
+
 
 $username = $_SESSION['username'];
 $orderID = '';
 $quantity = '';
 //$productID = '1';
 $comment = '';
-$prodid = $_SESSION['productID'];
+$prodid = $_SESSION['ProductID'];
 
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -38,6 +42,20 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		}
 	}
 
+	if (isset($_POST['change'])) {
+		$_SESSION['productID'] = $prodid;
+		$_SESSION['productname'] = $prodname;
+		$_SESSION['price'] = $pricee;
+		$_SESSION['unit'] = $unit;
+		$_SESSION['info'] = $desc;
+		$_SESSION['url'] = $url;
+
+		if($_SESSION['username'] === "Admin"){
+			header("Location: changeProduct.php");
+			die;
+		}
+	}
+
 	if (isset($_POST['Delete'])) {
 		$commentid = $_POST['Delete'];
 		$sql = "DELETE FROM Comments WHERE CommentID='$commentid'";
@@ -47,6 +65,18 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		}
 		else {
 			echo "Kunde inte ta bort kommentaren just nu.";
+		}
+	}
+
+
+	if (isset($_POST['removeprod'])) {
+		$sql = "DELETE FROM Products WHERE ProductID='$prodid'";
+		if($conn->query($sql)){
+			header("Location: store.php");
+			die;
+		}
+		else {
+			echo "Kunde inte ta bort produkten just nu.";
 		}
 	}
 
@@ -150,6 +180,7 @@ $_SESSION['Stock'] = $data['Stock'];
 $pricegold = $data['Price'];
 $prodname = $data['ProductName'];
 $url = $data['PicSrc'];
+$desc = $data['Description'];
 ?>
 
 <fieldset>
@@ -177,30 +208,37 @@ echo "<h4 style='text-align:center;'>" . "Betyg: " . number_format($avgrat, 1) .
 ?>
 
 
+
 <form name="form" method="POST">
-<p style="text-align:center;"><label for="fname">99,9% rent guld. Utvunnet och producerat i de norrländska <br> skogarna i Överkalix där Kalixälvens porlande vatten och <br> tidens tand har slipat till vårat guld i tusentals år. <br><br><p style="text-decoration: underline; text-align:center;">Antal i lager: <?php echo $_SESSION['Stock'], " gram."; ?><br><br>Pris: <?php echo $pricegold?> kr/gram.</label></p></p>
+<div style="width:300px; display: block; margin-left: auto; margin-right: auto;">
+<p style="text-align:center;"><label for="fname"><?php echo $desc?> <br><br><p style="text-decoration: underline; text-align:center;">Antal i lager: <?php echo $_SESSION['Stock'], " gram."; ?><br><br>Pris: <?php echo $pricegold?> kr/gram.</label></p></p></div>
 
 <?php
 if($_SESSION['username'] === "Admin") {?>
 <p style="text-align:center;"><label for="stock">Nytt lagersaldo: </label><input type="text" id="stock" name="stock">
 <button type="submit" name="update" value="Submit">Uppdatera</button></p>
      </form>
+<form name="form" method="POST">
+<p style="text-align:center;"><button type="submit" name="change" value="Submit">Ändra produkt</button></p>
+<p style="text-align:center;"><button type="submit" name="removeprod" value="Submit">Ta bort produkt</button></p>
 <?php
 }
 
 
 if($quantity > 0 && $_SESSION['Stock'] >= $quantity) {
 ?>
-    <h4 style="text-align:center;"><label><?php echo $quantity, " gram är tillagt i varukorgen!"; ?></label></h4>
+    <h4 style="text-align:center;"><label><?php echo $quantity . ", " . $unit . " är tillagt i varukorgen!"; ?></label></h4>
 <?php
 }
-?>
 
-<p style="text-align:center;"><label for="Guld">Antal gram: </label><input type="text" id="1" name="1">
+if(!$_SESSION['username'] === "Admin") {?>
+<p style="text-align:center;"><label for="Guld">Antal <?php echo $unit?>: </label><input type="text" id="1" name="1">
 <button type="submit" name="buy" value="Submit">Köp</button></p>
      </form>
 </fieldset>
-
+<?php
+}
+?>
 <fieldset>
 <center><h1>Kundrecensioner</h1></center>
 <form name="form" method="POST">

@@ -13,6 +13,8 @@ if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true && $_SESSION['u
 }
 
 
+echo $_SESSION['productname'];
+
 if($_SERVER['REQUEST_METHOD'] == "POST") {
 	if(isset($_POST['create'])){
 		$name = $_POST['productname']; 
@@ -54,12 +56,6 @@ p    {color: blue;}
 
 <h1>Guld och silver AB - Skapa ny produkt</h1>
 
-<a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
-
-<a href="mypages.php"><button type="submit" value="Submit">Beställningar</button></a>
-
-<a href="store.php"><button type="submit" value="Submit">Produkter</button></a>
-
 <fieldset>
 
 
@@ -81,16 +77,16 @@ p    {color: blue;}
 <p><label for="info">Produktinfo:</label></p>
 </div>
   <div style="width:250px; float:left;">
-<p><input type="text" id="productname" name="productname"></p><br>
-<p><input type="text" id="price" name="price"><label for="pricetype"></label>
-  <select name="pricetype" id="pricetype">
+<p><input type="text" id="productname" value="<?php echo $_SESSION['productname']?>"name="productname"></p><br>
+<p><input type="text" id="price" value="<?php echo $_SESSION['price']?>" name="price"><label for="pricetype"></label>
+  <select name="pricetype" value="<?php echo $_SESSION['unit']?>" id="pricetype">
     <option value="gram">gram</option>
-    <option value="kg">kg</option>
-    <option value="st">st</option>
+    <option value="kilo">kilo</option>
+    <option value="styck">styck</option>
   </select>
   <br></p><br>
-<p><input type="url" id="text" name="url"><label></p><br>
-<p><textarea name="info" cols="40" rows="5"></textarea></p>
+<p><input type="url" id="text" value="<?php echo $_SESSION['url']?>" name="url"><label></p><br>
+<p><textarea name="info" value="<?php echo $_SESSION['info']?>" cols="40" rows="5"></textarea></p>
 </div>
 </div>
 <div style="clear: both;"></div>

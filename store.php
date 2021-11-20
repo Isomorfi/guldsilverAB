@@ -18,6 +18,10 @@ $orderID = '';
 $quantity = '';
 $productID = '';
 
+
+
+
+
 if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 	foreach ($_POST as $name => $value) {
@@ -84,41 +88,42 @@ p    {color: blue;}
 
 <a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
 
-<a href="mypages.php"><button type="submit" value="Submit">Mina sidor</button></a><br>
+<a href="mypages.php"><button type="submit" value="Submit">Mina sidor</button></a>
 
+<?php
+
+if($_SESSION['username'] === "Admin") {?>
+
+<a href="createProduct.php"><button type="submit" value="Submit">Skapa produkt</button></a><br>
+<?php
+}
+?>
 <a href="basket.php"><input type="image" src="https://purepng.com/public/uploads/large/purepng.com-shopping-cartshoppingcarttrolleycarriagebuggysupermarkets-1421526532323sy0um.png" name="submit" width="60" height="60"/></a>
 
-
-
-<fieldset>
-<p style="text-align:center;"><a href="gold.php"><input type="image" 
 <?php
-$sql = "SELECT Price, PicSrc FROM db19880310.Products WHERE ProductID='1'";
+$link = 'products.php';
+$sql = "SELECT * FROM db19880310.Products";
 $res = mysqli_query($conn, $sql);
-$data = mysqli_fetch_assoc($res);
+while($data = mysqli_fetch_assoc($res)){
+    $prodid = $data['ProductID'];
+    $src = $data['PicSrc'];
+    $prodname = $data['ProductName'];
+    $pricee = $data['Price'];
+    $unit = $data['Unit'];?>
+    <fieldset>
+    <?php
+    echo "<p style=\"text-align:center;\"><a href=\"$link?ProductID=$prodid\"><input type=\"image\" src=\"$src\" 
+    name=\"submit\" width=\"250\" height=\"200\"/></a></p>";
 
-?>
-src="<?php echo $data['PicSrc'] ?>" 
-name="submit" width="250" height="200"/></a></p>
-
-<p style="text-align:center;"><a href="gold.php">99,9% rent guld. Pris <?php echo $data['Price'] ?>kr/g.</a></p>
+    echo "<p style=\"text-align:center;\"><a href=\"$link?ProductID=$prodid\">$prodname" . "<br><br>" . "Pris: " . $pricee . "kr/" . $unit . "</a></p>";
+    ?>
 
 </fieldset>
-
-
-<fieldset>
-<p style="text-align:center;"><a href="silver.php"><input type="image" 
 <?php
-$sql = "SELECT Price, PicSrc FROM db19880310.Products WHERE ProductID='2'";
-$res = mysqli_query($conn, $sql);
-$data = mysqli_fetch_assoc($res);
+}
+
+
 ?>
-src="<?php echo $data['PicSrc'] ?>" 
-name="submit" width="250" height="200"/></a></p>
-
-<p style="text-align:center;"><a href="silver.php">99,9% rent silver. Pris <?php echo $data['Price'] ?>kr/g.</a></p>
-
-</fieldset>
 
 
 

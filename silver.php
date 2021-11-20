@@ -23,6 +23,20 @@ $productID = '2';
 $comment = '';
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
+
+	if (isset($_POST['Delete'])) {
+		$commentid = $_POST['Delete'];
+		echo $commentid;
+		$sql = "DELETE FROM Comments WHERE CommentID='$commentid'";
+		if($conn->query($sql)){
+			header("Location: silver.php");
+			die;
+		}
+		else {
+			echo "Kunde inte ta bort kommentaren just nu.";
+		}
+	}
+
 	// kolla om recensionsknapp nedtryck. Lägg in kommentar i databas.
 	if (isset($_POST['Recension'])) {
 		$username = $_SESSION['username'];
@@ -205,6 +219,14 @@ while ($row = mysqli_fetch_assoc($result)) {
 <?php
     echo "<h4>" . $row['Username'] . "&nbsp;" . "(" . $row['CommentDate'] . ")" . "&nbsp;" . "Betyg: " . $row['Rating'] . " av 5" ."</h4>";
     echo "<p>" . $row['Comment'] . "</p>";
+
+if(($_SESSION['username'] === $row['Username']) || $_SESSION['username'] === "Admin") {?>
+<form name="form" method="POST">
+    <p>
+	<button type="submit" name="Delete" value="<?php echo $row['CommentID']?>">Ta bort</button></p>
+</form>
+<?php
+}
     
 ?>
    </p>
