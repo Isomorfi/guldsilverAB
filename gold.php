@@ -22,6 +22,32 @@ $productID = '1';
 $comment = '';
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
+
+	if (isset($_POST['update'])) {
+		$stockvalue = $_POST['stock'];
+
+		$sql = "UPDATE Products SET Stock='$stockvalue' WHERE ProductID='1'";
+		if($conn->query($sql)){
+			header("Location: gold.php");
+			die;
+		}
+		else {
+			echo "Kan inte fylla på saldo just nu.";
+		}
+	}
+
+	if (isset($_POST['Delete'])) {
+		$commentid = $_POST['Delete'];
+		$sql = "DELETE FROM Comments WHERE CommentID='$commentid'";
+		if($conn->query($sql)){
+			header("Location: gold.php");
+			die;
+		}
+		else {
+			echo "Kunde inte ta bort kommentaren just nu.";
+		}
+	}
+
 	// kolla om recensionsknapp nedtryck. Lägg in kommentar i databas.
 	if (isset($_POST['Recension'])) {
 		$username = $_SESSION['username'];
@@ -155,6 +181,14 @@ echo "<h4 style='text-align:center;'>" . "Betyg: " . number_format($avgrat, 1) .
 <p style="text-align:center;"><label for="fname">99,9% rent guld. Utvunnet och producerat i de norrländska <br> skogarna i Överkalix där Kalixälvens porlande vatten och <br> tidens tand har slipat till vårat guld i tusentals år. <br><br><p style="text-decoration: underline; text-align:center;">Antal i lager: <?php echo $_SESSION['Stock'], " gram."; ?><br><br>Pris: <?php echo $pricegold?> kr/gram.</label></p></p>
 
 <?php
+if($_SESSION['username'] === "Admin") {?>
+<p style="text-align:center;"><label for="stock">Nytt lagersaldo: </label><input type="text" id="stock" name="stock">
+<button type="submit" name="update" value="Submit">Uppdatera</button></p>
+     </form>
+<?php
+}
+
+
 if($quantity > 0 && $_SESSION['Stock'] >= $quantity) {
 ?>
     <h4 style="text-align:center;"><label><?php echo $quantity, " gram är tillagt i varukorgen!"; ?></label></h4>
@@ -194,6 +228,7 @@ $result = mysqli_query($conn, $sql); // First parameter is just return of "mysql
 //echo "Kundrecensioner: ";
 echo "<br>";
 //echo "<table border='1'>";
+
 while ($row = mysqli_fetch_assoc($result)) {
 ?>
 <center><style type="text/css">
@@ -208,6 +243,14 @@ while ($row = mysqli_fetch_assoc($result)) {
 <?php
     echo "<h4>" . $row['Username'] . "&nbsp;" . "(" . $row['CommentDate'] . ")" . "&nbsp;" . "Betyg: " . $row['Rating'] . " av 5" ."</h4>";
     echo "<p>" . $row['Comment'] . "</p>";
+
+if(($_SESSION['username'] === $row['Username']) || $_SESSION['username'] === "Admin") {?>
+<form name="form" method="POST">
+    <p>
+	<button type="submit" name="Delete" value="<?php echo $row['CommentID']?>">Ta bort</button></p>
+</form>
+<?php
+}
     
 ?>
    </p>

@@ -12,6 +12,40 @@ unset($_SESSION['country']);
 unset($_SESSION['email']);
 unset($_SESSION['phone']);
 
+
+$sql = "SELECT Orders.OrderID, OrderItems.ProductID, OrderItems.Quantity, Orders.OrderDate, Orders.orderDate
+FROM Orders
+INNER JOIN OrderItems ON Orders.OrderID=OrderItems.OrderID WHERE orderDate < NOW() - INTERVAL 1 day";
+$res = mysqli_query($conn, $sql);
+$gold = 0;
+$silver = 0;
+if(isset(mysqli_fetch_assoc($res)['OrderID'])) {
+while($data = mysqli_fetch_assoc($res)) {
+	$ord = $data['OrderID'];
+	if($data['ProductID'] == '1') {
+		$gold = $gold + (int)$data['Quantity'];
+		
+	}
+	if($data['ProductID'] == '2') {
+		$silver = $silver + (int)$data['Quantity'];
+	}
+	//$sql4 = "DELETE FROM db19880310.OrderItems WHERE OrderID='$ord'";
+	//$res4 = mysqli_query($conn, $sql4);
+
+}
+
+$sql1 = "UPDATE Products SET Stock='$gold' WHERE ProductID='1'";
+$res1 = mysqli_query($conn, $sql1);
+$sql2 = "UPDATE Products SET Stock='$silver' WHERE ProductID='2'";
+$res2 = mysqli_query($conn, $sql2);
+
+
+$sql4 = "DELETE FROM OrderItems INNER JOIN Orders ON Orders.OrderID=OrdersItems.OrderID WHERE orderDate < NOW() - INTERVAL 1 day AND Status='Basket'";
+$res4 = mysqli_query($conn, $sql4);
+
+$sql3 = "DELETE FROM Orders WHERE OrderDate < NOW() - INTERVAL 1 day AND Status='Basket'";
+$res3 = mysqli_query($conn, $sql3);
+}
 ?>
 
 <!DOCTYPE html>
@@ -95,7 +129,7 @@ alt="Logo" width="250" height="200"></p>
 </form></p><br><br>
 <br><br>
 <p style="text-align:center;"><?php echo "Sedan 2021-11-09 : " . $num . " nya användare - " . $Quan . " sålda produkter."?></p>
-<br><br><br>
+<br>
 <center>
 <p>
 
