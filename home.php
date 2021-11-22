@@ -13,38 +13,70 @@ unset($_SESSION['email']);
 unset($_SESSION['phone']);
 
 
-$sql = "SELECT Orders.OrderID, OrderItems.ProductID, OrderItems.Quantity, Orders.OrderDate, Orders.orderDate
+$sql = "SELECT Orders.OrderID, OrderItems.ProductID, OrderItems.Quantity, Orders.OrderDate, Orders.Status
 FROM Orders
-INNER JOIN OrderItems ON Orders.OrderID=OrderItems.OrderID WHERE orderDate < NOW() - INTERVAL 1 day";
+INNER JOIN OrderItems ON Orders.OrderID=OrderItems.OrderID WHERE orderDate < NOW() - INTERVAL 1 day AND Status='Basket' ORDER BY ProductID ASC";
 $res = mysqli_query($conn, $sql);
 $gold = 0;
-$silver = 0;
-if(isset(mysqli_fetch_assoc($res)['OrderID'])) {
+
+$current = 0;
+$previous = 0;
+$counter = 0;
+if(isset(mysqli_fetch_assoc($res)['Orders.OrderID'])) {
 while($data = mysqli_fetch_assoc($res)) {
 	$ord = $data['OrderID'];
-	if($data['ProductID'] == '1') {
-		$gold = $gold + (int)$data['Quantity'];
+	$current = $data['ProductID'];
+	if($counter > 0) {
+		if($data['ProductID'] == $previous) {
+			$previous = $current;
+			$gold = $gold + (int)$data['Quantity'];
 		
+		}
+		else {
+			$sql2 = "SELECT Stock FROM Products WHERE ProductID='$previous'";
+			$res2 = mysqli_query($conn, $sql2);
+			$data2 = mysqli_fetch_assoc($res2);
+			$stock = (int)$data2['Stock'] + $gold;
+			$sql1 = "UPDATE Products SET Stock='$stock' WHERE ProductID='$previous'";
+			$res1 = mysqli_query($conn, $sql1);
+			$gold = (int)$data['Quantity'];
+			$counter = 0;
+			$previous = $current;
+		}
+
+
 	}
-	if($data['ProductID'] == '2') {
-		$silver = $silver + (int)$data['Quantity'];
+	else {
+		$previous = $current;
+		$gold = $gold + (int)$data['Quantity'];
+
 	}
-	//$sql4 = "DELETE FROM db19880310.OrderItems WHERE OrderID='$ord'";
-	//$res4 = mysqli_query($conn, $sql4);
+	$counter = $counter + 1;
+	
 
 }
 
-$sql1 = "UPDATE Products SET Stock='$gold' WHERE ProductID='1'";
-$res1 = mysqli_query($conn, $sql1);
-$sql2 = "UPDATE Products SET Stock='$silver' WHERE ProductID='2'";
+$sql2 = "SELECT Stock FROM Products WHERE ProductID='$previous'";
 $res2 = mysqli_query($conn, $sql2);
+$data2 = mysqli_fetch_assoc($res2);
+$stock = (int)$data2['Stock'] + $gold;
+$sql1 = "UPDATE Products SET Stock='$stock' WHERE ProductID='$previous'";
+
+if($conn->query($sql1)){
+	echo " Updated";
+}
 
 
-$sql4 = "DELETE FROM OrderItems INNER JOIN Orders ON Orders.OrderID=OrdersItems.OrderID WHERE orderDate < NOW() - INTERVAL 1 day AND Status='Basket'";
-$res4 = mysqli_query($conn, $sql4);
 
-$sql3 = "DELETE FROM Orders WHERE OrderDate < NOW() - INTERVAL 1 day AND Status='Basket'";
-$res3 = mysqli_query($conn, $sql3);
+
+$sql4 = "DELETE OrderItems FROM OrderItems INNER JOIN Orders ON Orders.OrderID=OrderItems.OrderID WHERE orderDate < NOW() - INTERVAL 1 day AND Status='Basket'";
+
+$sql3 = "DELETE Orders FROM Orders WHERE OrderDate < NOW() - INTERVAL 1 day AND Status='Basket'";
+
+if($conn->query($sql3) && $conn->query($sql4)){
+	echo " Deleted";
+}	
+
 }
 ?>
 
@@ -53,9 +85,9 @@ $res3 = mysqli_query($conn, $sql3);
 <head>
 <style>
 body {background-color: powderblue;}
-h1   {color: blue;}
-p    {color: blue;}
-h4   {color: blue;}
+h1   {color: #020764;}
+p    {color: #020764;}
+h4   {color: #020764;}
 </style>
 </head>
 <body>
@@ -97,7 +129,7 @@ $Quan = $Quan + $data['Quantity'];
 <p style="text-align:center;"><img src="https://packbud.com/sites/packbud/files/field/gmapimagei154428739gmapimage106949.png" alt="Logo" width="350" height="300"></p>
 
 
-<p style="text-align:center;"><label for="fname"><b>Våra produkter:</b></label></p>
+<p style="text-align:center;"><label for="fname"><b>Några av våra produkter:</b></label></p>
 
 
 <p style="text-align:center;">
