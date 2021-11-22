@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 include("db_connection.php");
@@ -34,6 +33,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 		$sql = "UPDATE Products SET Stock='$stockvalue' WHERE ProductID='$prodid'";
 		if($conn->query($sql)){
+			$_SESSION['postdata'] = $_POST;
+			unset($_POST);
 			header("Location: products.php");
 			die;
 		}
@@ -51,6 +52,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$_SESSION['url'] = $url;
 
 		if($_SESSION['username'] === "Admin"){
+			$_SESSION['postdata'] = $_POST;
+			unset($_POST);
 			header("Location: changeProduct.php");
 			die;
 		}
@@ -60,11 +63,32 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$commentid = $_POST['Delete'];
 		$sql = "DELETE FROM Comments WHERE CommentID='$commentid'";
 		if($conn->query($sql)){
+			$_SESSION['postdata'] = $_POST;
+			unset($_POST);
 			header("Location: products.php");
 			die;
 		}
 		else {
-			echo "Kunde inte ta bort kommentaren just nu.";
+			echo " Kunde inte ta bort kommentaren just nu.";
+		}
+	}
+
+	if (isset($_POST['Answer'])) {
+		$commentid = $_POST['Answer'];
+		$answer = $_POST['Ans'];
+		//$sql = "INSERT INTO AdminComments VALUES ('$commentid', 'Admin', '$prodid', '$answer')";
+		//echo $answer;
+		$sql = "UPDATE Comments SET Answers='$answer' WHERE CommentID='$commentid'";
+		$sql1 = "UPDATE Comments SET Author='Admin' WHERE CommentID='$commentid'";
+		$sql2 = "UPDATE Comments SET AnswerDate=current_timestamp WHERE CommentID='$commentid'";
+		if($conn->query($sql) && $conn->query($sql1) && $conn->query($sql2)){
+			$_SESSION['postdata'] = $_POST;
+			unset($_POST);
+			header("Location: products.php");
+			die;
+		}
+		else {
+			echo " Kan inte kommentera just nu.";
 		}
 	}
 
@@ -72,6 +96,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	if (isset($_POST['removeprod'])) {
 		$sql = "DELETE FROM Products WHERE ProductID='$prodid'";
 		if($conn->query($sql)){
+			$_SESSION['postdata'] = $_POST;
+			unset($_POST);
 			header("Location: store.php");
 			die;
 		}
@@ -89,8 +115,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$comment = $_POST['comment'];
 		
 
-		$sql = "INSERT INTO db19880310.Comments (Comment, Username, ProductID, Rating) VALUES ('$comment', '$username', '$productID', $rating)";  
+		$sql = "INSERT INTO db19880310.Comments (Comment, Username, ProductID, Rating) VALUES ('$comment', '$username', '$prodid', $rating)";  
 		$conn->query($sql);
+		$_SESSION['postdata'] = $_POST;
+		unset($_POST);
+		header("Location: products.php");
+		die;
 		
 	}
 
@@ -101,7 +131,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		
 			$newStock = $_SESSION['Stock'] - $quantity;
 			
-			$sql = "UPDATE db19880310.Products SET Stock='$newStock' WHERE ProductID='1'";
+			$sql = "UPDATE db19880310.Products SET Stock='$newStock' WHERE ProductID='$prodid'";
 			$conn->query($sql);
 			
 			$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
@@ -125,20 +155,40 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 				$conn->query($sql);
 
 				$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
-				$conn->query($sql);
+				
 				$res = mysqli_query($conn, $sql);
 				$data = mysqli_fetch_assoc($res);
 				$orderID = $data['OrderID'];
 			
 			} 
-
-
-			$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
-			VALUES ('$orderID', '$productID', '$quantity')";
-			$conn->query($sql);
-	
+			
+			$sql = "SELECT * FROM OrderItems WHERE ProductID='$prodid' AND OrderID='$orderID'";
+			$res = mysqli_query($conn, $sql);
+			$data = mysqli_fetch_assoc($res);
+			if(!isset($data['OrderID'])) {
+				$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
+				VALUES ('$orderID', '$prodid', '$quantity')";
+				if($conn->query($sql)) {
+					echo " Inlagt i db";
+				}
 			}
-		
+			else {
+				$insquan = $data['Quantity'];
+				$quantity = $quantity + $insquan;
+				$sql = "Update db19880310.OrderItems SET Quantity='$quantity' WHERE OrderID='$orderID' AND ProductID='$prodid'";
+				if($conn->query($sql)) {
+					echo " Updaterat db";
+					echo " Orderid = " . $orderID;
+					echo " Quantity = " . $quantity;
+				}
+			}
+			
+			}
+		$_SESSION['postdata'] = $_POST;
+		unset($_POST);
+		header("Location: products.php");
+		die;
+
 		}
 	
 }
@@ -181,6 +231,7 @@ $pricegold = $data['Price'];
 $prodname = $data['ProductName'];
 $url = $data['PicSrc'];
 $desc = $data['Description'];
+$unit =$data['Unit'];
 ?>
 
 <fieldset>
@@ -227,11 +278,11 @@ if($_SESSION['username'] === "Admin") {?>
 
 if($quantity > 0 && $_SESSION['Stock'] >= $quantity) {
 ?>
-    <h4 style="text-align:center;"><label><?php echo $quantity . ", " . $unit . " är tillagt i varukorgen!"; ?></label></h4>
+    <h4 style="text-align:center;"><label><?php echo $quantity . " " . $unit . " är tillagt i varukorgen!"; ?></label></h4>
 <?php
 }
 
-if(!$_SESSION['username'] === "Admin") {?>
+if($_SESSION['username'] !== "Admin") {?>
 <p style="text-align:center;"><label for="Guld">Antal <?php echo $unit?>: </label><input type="text" id="1" name="1">
 <button type="submit" name="buy" value="Submit">Köp</button></p>
      </form>
@@ -241,6 +292,8 @@ if(!$_SESSION['username'] === "Admin") {?>
 ?>
 <fieldset>
 <center><h1>Kundrecensioner</h1></center>
+<?php
+if($_SESSION['username'] !== "Admin") {?>
 <form name="form" method="POST">
 <p style="text-align:center;"><textarea name="comment" cols="40" rows="5"></textarea></p>
 
@@ -258,14 +311,22 @@ if(!$_SESSION['username'] === "Admin") {?>
 <p style="text-align:center;">
 <button type="submit" name="Recension" value="Submit">Skicka recension</button></p>
      </form>
+<?php
+}
+?>
 <br>
 
+
+
+
+
 <?php
+
 $sql = "SELECT * FROM db19880310.Comments WHERE ProductID='$prodid' ORDER BY CommentDate DESC";
-$result = mysqli_query($conn, $sql); // First parameter is just return of "mysqli_connect()" function
-//echo "Kundrecensioner: ";
+$result = mysqli_query($conn, $sql); 
+
 echo "<br>";
-//echo "<table border='1'>";
+
 
 while ($row = mysqli_fetch_assoc($result)) {
 ?>
@@ -277,21 +338,37 @@ while ($row = mysqli_fetch_assoc($result)) {
 </style>
 
     <fieldset class="fieldset-auto-width">
+
+<div style="width:400px; display: block; margin-left: auto; margin-right: auto; border: 15px black;">
     <p>
 <?php
     echo "<h4>" . $row['Username'] . "&nbsp;" . "(" . $row['CommentDate'] . ")" . "&nbsp;" . "Betyg: " . $row['Rating'] . " av 5" ."</h4>";
     echo "<p>" . $row['Comment'] . "</p>";
 
-if(($_SESSION['username'] === $row['Username']) || $_SESSION['username'] === "Admin") {?>
+if(isset($row['Answers'])) { ?>
+<div style="width:350px; display: block; margin-left: auto; margin-right: auto; border: 10px black;">
+<?php
+    echo "<h4 style=\"color:black;\">" . $row['Author'] . "&nbsp;" . "(" . $row['AnswerDate'] . ")" . "</h4>";
+    echo "<p style=\"color:black;\">" . $row['Answers'] . "</p>"; 
+}
+?> 
+</div>
+<?php
+if(($_SESSION['username'] === $row['Username'] && (!isset($row['Answers']))) || $_SESSION['username'] === "Admin") {?>
 <form name="form" method="POST">
-    <p>
+    <p  style="text-align:center;">
 	<button type="submit" name="Delete" value="<?php echo $row['CommentID']?>">Ta bort</button></p>
+	<?php if(!isset($row['Answers']) && $_SESSION['username'] === "Admin") {?>
+		<p style="text-align:center;"><textarea name="Ans" cols="40" rows="5"></textarea></p>
+		<p style="text-align:center;"><button type="submit" name="Answer" value="<?php echo $row['CommentID']?>">Svara</button></p>
+	<?php } ?>
 </form>
 <?php
 }
     
 ?>
    </p>
+</div>
    </fieldset></center>
 <br>
 <?php

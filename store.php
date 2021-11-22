@@ -94,10 +94,11 @@ p    {color: blue;}
 
 if($_SESSION['username'] === "Admin") {?>
 
-<a href="createProduct.php"><button type="submit" value="Submit">Skapa produkt</button></a><br>
+<a href="createProduct.php"><button type="submit" value="Submit">Skapa produkt</button></a>
 <?php
 }
 ?>
+<br>
 <a href="basket.php"><input type="image" src="https://purepng.com/public/uploads/large/purepng.com-shopping-cartshoppingcarttrolleycarriagebuggysupermarkets-1421526532323sy0um.png" name="submit" width="60" height="60"/></a>
 
 <?php
