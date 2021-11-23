@@ -31,8 +31,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$total = $_POST['tot'];
 
 
-		echo "total " . $total;
-
         $sql = "UPDATE db19880310.Orders SET Status='Ordered' WHERE Username='$username' AND OrderID='$orderID'"; 
 		$conn->query($sql);
 
@@ -119,7 +117,8 @@ INNER JOIN Products ON OrderItems.ProductID=Products.ProductID WHERE Username='$
 $res = mysqli_query($conn, $sql);
 $link = 'products.php';
 $total = 0;
-//if(isset(mysqli_fetch_assoc($res)['OrderID'])) {
+
+if($res) {
 while($data = mysqli_fetch_assoc($res)){
 
 $quantity = $data['Quantity'];
@@ -151,7 +150,7 @@ $conn->query($costupdate);
   <div style="width:700px; float:right;"><p><?php echo "<a href=\"$link?ProductID=$prodid\">";?><?php echo $prodname?></a></p><p style="text-decoration: underline;"><label>Produkter i varukorgen: <?php echo $quantity . " " . $unit . " " . $prodname . "."?></label></p>
 <p style="text-decoration: underline;"><label>Kostnad: <?php echo $quantity . " " . $unit . " á " . $price . " kr/" . $unit . ": " . $totprice . " kr."?></label></p>
 
-<?php echo "propro" . $prodid; ?>
+
 
 <form name="form" method="POST">
     <p>
@@ -166,7 +165,7 @@ $conn->query($costupdate);
 
 <?php
 }
-//}
+}
 ?>
 
 

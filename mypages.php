@@ -28,8 +28,8 @@ if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
         <meta charset="UTF-8">
         <style>
 body {background-color: powderblue;}
-h1   {color: blue;}
-p    {color: blue;}
+h1   {color: #020764;}
+p    {color: #020764;}
 </style>
 </head>
 <body>

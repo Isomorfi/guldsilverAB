@@ -28,8 +28,8 @@ if(isset($_GET['OrderID'])){
 <head>
 <style>
 body {background-color: powderblue;}
-h1   {color: blue;}
-p    {color: blue;}
+h1   {color: #020764;}
+p    {color: #020764;}
 h3   {color: red;}
 </style>
 </head>
@@ -50,11 +50,11 @@ $orderID = $_SESSION['orderID'];
 $username = $_SESSION['username'];
 
 
-$sql = "SELECT Firstname, Lastname, Address, ZIP, City, Country, Email, Phone FROM db19880310.Customers WHERE Username='$username'";
-$result = mysqli_query($conn, $sql); // First parameter is just return of "mysqli_connect()" function
-//echo "Kundrecensioner: ";
+$sql = "SELECT *
+FROM Customers
+INNER JOIN Orders ON Customers.Username=Orders.Username WHERE OrderID='$orderID'";
+$result = mysqli_query($conn, $sql); 
 echo "<br>";
-//echo "<table border='1'>";
 while ($row = mysqli_fetch_assoc($result)) {
 ?>
 <center><style type="text/css">
@@ -100,9 +100,6 @@ $sql3 = "SELECT ProductName FROM Products WHERE ProductID='$productID'";
 $res3 = mysqli_query($conn, $sql3);
 $data3 = mysqli_fetch_assoc($res3);
 
-//$price = $data3['Price'] * $data['Quantity'];
-
-//$totPrice = $totPrice + $price;
 
 ?>
 <fieldset>
@@ -137,7 +134,7 @@ $sql3 = "SELECT TotalCost FROM Orders WHERE OrderID='$orderID'";
 $res3 = mysqli_query($conn, $sql3);
 $data3 = mysqli_fetch_assoc($res3);
 ?>
-<p style="text-align:center;">Orderkostnad: <?php echo $data3['TotalCost']?> kr.</p>
+<p>Orderkostnad: <?php echo $data3['TotalCost']?> kr.</p>
 
    
    </fieldset></center>

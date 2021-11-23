@@ -1,6 +1,10 @@
 
+
 <?php
+
+
 session_start();
+
 
 if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
 	echo "Inloggad som " . $_SESSION['username'] . ".";
@@ -13,61 +17,47 @@ if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
 
 include("db_connection.php");
 
+
+
 $username = $_SESSION['username'];
 $orderID = '';
 $quantity = '';
 $productID = '';
-
-
+$sql10 = '';
 
 
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
 
-	foreach ($_POST as $name => $value) {
-   		$quantity = $value; 
-   		$productID = $name;
-	}
 
-	$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
-	$res = mysqli_query($conn, $sql);
-	$data = mysqli_fetch_assoc($res);
-	
-	if(!isset($data['OrderID'])) {
-		$_SESSION['status'] = 'Ordered';
-	}
-	else {
-		$orderID = $data['OrderID'];
-		$_SESSION['status'] = 'Basket';
-	}
-	
-
-	if($_SESSION['status'] == 'Ordered') {
-		$_SESSION['status'] = 'Basket';
+	if (isset($_POST['searchP'])) {
+		$search = $_POST['search'];
+                $sql10 = "SELECT * FROM db19880310.Products WHERE ProductName LIKE '$search%'";
 		
-		$sql = "INSERT INTO db19880310.Orders (Username, Status)
-			VALUES ('$username', '".$_SESSION['status']."')";
-		$conn->query($sql);
-
-		$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
-		$conn->query($sql);
-		$res = mysqli_query($conn, $sql);
-		$data = mysqli_fetch_assoc($res);
-		$orderID = $data['OrderID'];
-			
-	} 
-
-	
-
-	
-	
-	$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
-		VALUES ('$orderID', '$productID', '$quantity')";
-	if ($conn->query($sql) === TRUE) {
-		echo " Vara tillagd i varukorg.";
+		
+		
 	}
 
+
+	if (isset($_POST['status'])) {
+        		$prodid = $_POST['status'];
+
+        		$conn->begin_transaction();
+        		$sql = "SELECT Available From db19880310.Products WHERE ProductID='$prodid'";
+        		$res = mysqli_query($conn, $sql);
+        		$status = mysqli_fetch_assoc($res)['Available'] == 1 ? 0 : 1;
+
+        		$sql = "UPDATE Products SET Available='$status' WHERE ProductID='$prodid'";
+        		$conn->query($sql);
+        		$conn->commit();
+                        $sql10 = "SELECT * FROM db19880310.Products";
 	
+    	}
+	
+}
+else {
+    $sql10 = "SELECT * FROM db19880310.Products";
+    
 }
 
 ?>
@@ -78,8 +68,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 <head>
 <style>
 body {background-color: powderblue;}
-h1   {color: blue;}
-p    {color: blue;}
+h1   {color: #020764;}
+p    {color: #020764;}
 </style>
 </head>
 <body>
@@ -89,6 +79,9 @@ p    {color: blue;}
 <a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
 
 <a href="mypages.php"><button type="submit" value="Submit">Mina sidor</button></a>
+
+
+
 
 <?php
 
@@ -101,18 +94,60 @@ if($_SESSION['username'] === "Admin") {?>
 <br>
 <a href="basket.php"><input type="image" src="https://purepng.com/public/uploads/large/purepng.com-shopping-cartshoppingcarttrolleycarriagebuggysupermarkets-1421526532323sy0um.png" name="submit" width="60" height="60"/></a>
 
+<!-- nytt -->
+<form name="form" method="POST">
+<p style="text-align:center;"><label for="search">Sök produkt: </label><input type="text" id="search" name="search">
+<button type="submit" name="searchP" value="SearchP">Sök</button></p>
+
+     </form>
+<!-- nytt -->
+
 <?php
 $link = 'products.php';
-$sql = "SELECT * FROM db19880310.Products";
-$res = mysqli_query($conn, $sql);
+
+$res = mysqli_query($conn, $sql10);
 while($data = mysqli_fetch_assoc($res)){
     $prodid = $data['ProductID'];
     $src = $data['PicSrc'];
     $prodname = $data['ProductName'];
     $pricee = $data['Price'];
-    $unit = $data['Unit'];?>
-    <fieldset>
+    $unit = $data['Unit'];
+
+	
+    $status = $data['Available'];
+
+    if($_SESSION['username'] === "Admin") {
+        ?>
+
+        <fieldset>
+        <form name="form" method="POST">
+        <div style="width:300px; display: block; margin-left: auto; margin-right: auto;">
+
+        <?php if($status) { ?>
+            <p style="text-align:center;">
+                <label for="fname">
+                    <p style="text-decoration: underline; text-align:center;">Tillgänglig produkt<br><br>
+                </label>
+            </p></p></div>
+
+        <?php } else { ?>
+            <p style="text-align:center;">
+                <label for="fname">
+                    <p style="text-decoration: underline; text-align:center;">Ej tillgänglig produkt<br><br>
+                </label>
+            </p></p></div>
+        <?php } ?>
+
+        <p style="text-align:center;"><button type="submit" name="status" value="<?php echo $prodid ?>">Uppdatera</button></p>
+
+        </form>
+
     <?php
+    }
+    if(!$status && $_SESSION['username'] != "Admin") {
+        continue;
+    }
+
     echo "<p style=\"text-align:center;\"><a href=\"$link?ProductID=$prodid\"><input type=\"image\" src=\"$src\" 
     name=\"submit\" width=\"250\" height=\"200\"/></a></p>";
 

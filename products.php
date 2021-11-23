@@ -35,11 +35,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		if($conn->query($sql)){
 			$_SESSION['postdata'] = $_POST;
 			unset($_POST);
+			echo '<script>alert("Fält kan inte lämnas tomma!")</script>';
 			header("Location: products.php");
 			die;
 		}
 		else {
-			echo "Kan inte fylla på saldo just nu.";
+			echo '<script>alert("Något gick fel vid påfyllning av saldo. Kontakta IT-avdelningen.")</script>';
 		}
 	}
 
@@ -69,7 +70,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 			die;
 		}
 		else {
-			echo " Kunde inte ta bort kommentaren just nu.";
+			echo '<script>alert("Kommentaren kunde inte tas bort just nu.")</script>';
 		}
 	}
 
@@ -88,7 +89,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 			die;
 		}
 		else {
-			echo " Kan inte kommentera just nu.";
+			echo '<script>alert("Du kan inte kommentera just nu.")</script>';
 		}
 	}
 
@@ -98,18 +99,18 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		if($conn->query($sql)){
 			$_SESSION['postdata'] = $_POST;
 			unset($_POST);
+			echo '<script>alert("Produkten tas bort.")</script>';
 			header("Location: store.php");
 			die;
 		}
 		else {
-			echo "Kunde inte ta bort produkten just nu.";
+			echo '<script>alert("Någon har handlat av denna produkt och kan ej längre tas bort. Du kan däremot inaktivera den.")</script>';
 		}
 	}
 
 	// kolla om recensionsknapp nedtryck. Lägg in kommentar i databas.
 	if (isset($_POST['Recension'])) {
 		$username = $_SESSION['username'];
-		//$orderID = $_SESSION['OrderID'];
 		$rating = $_POST['grade'];
 	
 		$comment = $_POST['comment'];
@@ -169,7 +170,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 				$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
 				VALUES ('$orderID', '$prodid', '$quantity')";
 				if($conn->query($sql)) {
-					echo " Inlagt i db";
+					
 				}
 			}
 			else {
@@ -217,6 +218,8 @@ h4   {color: #020764;}
 <a href="store.php"><button type="submit" value="Submit">Produkter</button></a><br>
 
 <a href="basket.php"><input type="image" src="https://purepng.com/public/uploads/large/purepng.com-shopping-cartshoppingcarttrolleycarriagebuggysupermarkets-1421526532323sy0um.png" name="submit" width="60" height="60"/></a>
+
+
 
 <?php
 
@@ -278,7 +281,7 @@ if($_SESSION['username'] === "Admin") {?>
 
 if($quantity > 0 && $_SESSION['Stock'] >= $quantity) {
 ?>
-    <h4 style="text-align:center;"><label><?php echo $quantity . " " . $unit . " är tillagt i varukorgen!"; ?></label></h4>
+    echo '<script>alert($quantity . " " . $unit . " finns nu i varukorgen!")</script>';
 <?php
 }
 

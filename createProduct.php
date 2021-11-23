@@ -20,19 +20,20 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$url = $_POST['url'];
 		$info = $_POST['info'];
                  $unit = $_POST['pricetype'];
-		if(strlen($name) > 0 && strlen($price) > 0 && strlen($url) > 0 && strlen($info) > 0) {
+		$stock = $_POST['stock'];
+		if(strlen($name) > 0 && strlen($price) > 0 && strlen($url) > 0 && strlen($info) > 0 && strlen($stock) >= 0) {
 			
 
-			$sql = "INSERT INTO Products (ProductName, Price, PicSrc, Stock, Description, Unit) VALUES ('$name', '$price', '$url', '0', '$info', '$unit')";
+			$sql = "INSERT INTO Products (ProductName, Price, PicSrc, Stock, Description, Unit) VALUES ('$name', '$price', '$url', '$stock', '$info', '$unit')";
 			if ($conn->query($sql) === TRUE) {
-				echo " Ny produkt skapad.";
+				echo '<script>alert("Ny produkt skapad!")</script>';
 			}
                         else {
-                            echo " Produkt kan inte skapas just nu.";
+                            echo '<script>alert("Produkt kan inte skapas just nu! Kontakta IT-avdelningen!")</script>';
                         }
 		}
 		else {
-			echo " Fält får ej lämnas tomma.";
+			echo '<script>alert("Fält kan inte lämnas tomma!")</script>';
 		}
 	}
 
@@ -46,8 +47,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         <meta charset="UTF-8">
         <style>
 body {background-color: powderblue;}
-h1   {color: blue;}
-p    {color: blue;}
+h1   {color: #020764;}
+p    {color: #020764;}
 </style>
 </head>
 <body>
@@ -77,7 +78,8 @@ p    {color: blue;}
   <div style="width:150px; float:left;">
 <p><label for="productname">Produktnamn:</label></p><br>
 <p><label for="price">Pris:</label></p><br>
-<p><label for="url">URL:</label></p><br>
+<p><label for="url">URL:</label></p><br><br>
+<p><label for="url">Lagersaldo:</label></p><br>
 <p><label for="info">Produktinfo:</label></p>
 </div>
   <div style="width:250px; float:left;">
@@ -90,6 +92,7 @@ p    {color: blue;}
   </select>
   <br></p><br>
 <p><input type="url" id="text" name="url"><label></p><br>
+<p><input type="text" id="text" name="stock"><label></p><br>
 <p><textarea name="info" cols="40" rows="5"></textarea></p>
 </div>
 </div>

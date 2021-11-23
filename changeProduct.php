@@ -48,8 +48,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         <meta charset="UTF-8">
         <style>
 body {background-color: powderblue;}
-h1   {color: blue;}
-p    {color: blue;}
+h1   {color: #020764;}
+p    {color: #020764;}
 </style>
 </head>
 <body>
