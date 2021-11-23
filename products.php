@@ -262,7 +262,7 @@ echo "<h4 style='text-align:center;'>" . "Betyg: " . number_format($avgrat, 1) .
 
 <form name="form" method="POST">
 <div style="width:300px; display: block; margin-left: auto; margin-right: auto;">
-<p style="text-align:center;"><label for="fname"><?php echo $desc?> <br><br><p style="text-decoration: underline; text-align:center;">Antal i lager: <?php echo $_SESSION['Stock'], " gram."; ?><br><br>Pris: <?php echo $pricegold?> kr/gram.</label></p></p></div>
+<p style="text-align:center;"><label for="fname"><?php echo $desc?> <br><br><p style="text-decoration: underline; text-align:center;">Antal i lager: <?php echo $_SESSION['Stock'], $unit . "."; ?><br><br>Pris: <?php echo $pricegold?> kr/<?php echo $unit?>.</label></p></p></div>
 
 <?php
 if($_SESSION['username'] === "Admin") {?>

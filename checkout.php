@@ -111,15 +111,16 @@ $data3 = mysqli_fetch_assoc($res3);
   	<div style="width:240px; float:left;"><input type="image" 
   	<?php
 	// Hämtar bild source från databas
-		$sql1 = "SELECT PicSrc FROM db19880310.Products WHERE ProductID='$productID'";
+		$sql1 = "SELECT * FROM db19880310.Products WHERE ProductID='$productID'";
 		$res1 = mysqli_query($conn, $sql1);
 		$data2 = mysqli_fetch_assoc($res1);
+		$unit = $data2['Unit'];
 	?>
 	src="<?php echo $data2['PicSrc'] ?>" 
   	name="submit" width="200" height="150"/></p>
 </div>
 
-<div style="width:350px; float:left;"><p><label id="silver"><br>99,9% rent <?php echo $data3['ProductName']?>. <br><br>Antal gram: <?php echo $data['Quantity']?>. <br><br>Kostnad: <?php echo $data['TotalCost']?> kr.</label></p>
+<div style="width:350px; float:left;"><p><label id="silver"><br>99,9% rent <?php echo $data3['ProductName']?>. <br><br>Antal <?php echo $unit;?>: <?php echo $data['Quantity']?>. <br><br>Kostnad: <?php echo $data['TotalCost']?> kr.</label></p>
 
 
 

@@ -30,6 +30,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$_SESSION['orderID'] = $orderID;
 		$total = $_POST['tot'];
 
+
+		echo "total " . $total;
+
         $sql = "UPDATE db19880310.Orders SET Status='Ordered' WHERE Username='$username' AND OrderID='$orderID'"; 
 		$conn->query($sql);
 
@@ -40,7 +43,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		die;
     }
 
-	echo "post " . $_POST['change'];
 
 	//Gör funktion av detta?
 	if (isset($_POST['change'])) {
@@ -175,12 +177,13 @@ $conn->query($costupdate);
 <fieldset>
 	<p style="text-align:center;">
 	<p style="text-align:center;"><label>Totalt pris: <?php echo $total . " kr."?></label></p>
-	<input type="hidden" name="tot" value="<?php echo $total;?>">
+	
 	<form name="form" method="POST">
 
 <?php
 if($total != 0) {
 ?>
+	<input type="hidden" name="tot" value="<?php echo $total;?>">
 	<p style="text-align:center;"><button type="submit" onclick="alert('Köp genomfört')"value="<?php echo $orderID?>" name="Betala">Betala</button></p>
 <?php
 }
