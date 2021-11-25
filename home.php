@@ -15,14 +15,18 @@ unset($_SESSION['phone']);
 
 $sql = "SELECT Orders.OrderID, OrderItems.ProductID, OrderItems.Quantity, Orders.OrderDate, Orders.Status
 FROM Orders
-INNER JOIN OrderItems ON Orders.OrderID=OrderItems.OrderID WHERE orderDate < NOW() - INTERVAL 1 day AND Status='Basket' ORDER BY ProductID ASC";
+INNER JOIN OrderItems ON Orders.OrderID=OrderItems.OrderID WHERE OrderDate < NOW() - INTERVAL 1 day AND Status='Basket' ORDER BY ProductID ASC";
 $res = mysqli_query($conn, $sql);
 $gold = 0;
+
 
 $current = 0;
 $previous = 0;
 $counter = 0;
-if(isset(mysqli_fetch_assoc($res)['Orders.OrderID'])) {
+
+// Radera alla kundvagnar som är äldre än ett dygn och har status basket. Återställ lagersaldo.
+
+if (mysqli_num_rows($res) > 0) {
 while($data = mysqli_fetch_assoc($res)) {
 	$ord = $data['OrderID'];
 	$current = $data['ProductID'];
@@ -62,20 +66,15 @@ $data2 = mysqli_fetch_assoc($res2);
 $stock = (int)$data2['Stock'] + $gold;
 $sql1 = "UPDATE Products SET Stock='$stock' WHERE ProductID='$previous'";
 
-if($conn->query($sql1)){
-	echo " Updated";
-}
+$conn->query($sql1);
 
 
 
-
-$sql4 = "DELETE OrderItems FROM OrderItems INNER JOIN Orders ON Orders.OrderID=OrderItems.OrderID WHERE orderDate < NOW() - INTERVAL 1 day AND Status='Basket'";
+$sql4 = "DELETE OrderItems FROM OrderItems INNER JOIN Orders ON Orders.OrderID=OrderItems.OrderID WHERE OrderDate < NOW() - INTERVAL 1 day AND Status='Basket'";
+$conn->query($sql4);
 
 $sql3 = "DELETE Orders FROM Orders WHERE OrderDate < NOW() - INTERVAL 1 day AND Status='Basket'";
-
-if($conn->query($sql3) && $conn->query($sql4)){
-	echo " Deleted";
-}	
+$conn->query($sql3);
 
 }
 ?>
