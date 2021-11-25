@@ -44,21 +44,23 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		}
 	}
 
-	if (isset($_POST['change'])) {
+	/*if (isset($_POST['change'])) {
 		$_SESSION['productID'] = $prodid;
 		$_SESSION['productname'] = $prodname;
 		$_SESSION['price'] = $pricee;
 		$_SESSION['unit'] = $unit;
 		$_SESSION['info'] = $desc;
 		$_SESSION['url'] = $url;
+		$_SESSION['stock'] = $stock;
+		$_SESSION['change'] = true;
 
 		if($_SESSION['username'] === "Admin"){
 			$_SESSION['postdata'] = $_POST;
 			unset($_POST);
-			header("Location: changeProduct.php");
-			die;
+			//header("Location: createProduct.php");
+			//die;
 		}
-	}
+	}*/
 
 	if (isset($_POST['Delete'])) {
 		$commentid = $_POST['Delete'];
@@ -248,6 +250,7 @@ $conn->query($ratingquery);
 $resu = mysqli_query($conn, $ratingquery);
 $avgrat = 0;
 $count = 0;
+$link2 = 'createProduct.php';
 while($ratingdata = mysqli_fetch_assoc($resu)) {
 	$avgrat = $avgrat + $ratingdata['Rating'];
 	$count = $count + 1;
@@ -272,8 +275,10 @@ if($_SESSION['username'] === "Admin") {?>
 <p style="text-align:center;"><label for="stock">Nytt lagersaldo: </label><input type="text" id="stock" name="stock">
 <button type="submit" name="update" value="Submit">Uppdatera</button></p>
      </form>
+<?php
+echo "<p style=\"text-align:center;\"><a href=\"$link2?ProductID=$prodid\"><button type=\"submit\" name=\"change\" value=\"Submit\">Ändra produkt</button></a></p>";
+?>
 <form name="form" method="POST">
-<p style="text-align:center;"><button type="submit" name="change" value="Submit">Ändra produkt</button></p>
 <p style="text-align:center;"><button type="submit" name="removeprod" value="Submit">Ta bort produkt</button></p>
 <?php
 }
