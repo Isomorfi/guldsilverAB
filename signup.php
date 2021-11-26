@@ -143,7 +143,7 @@ p    {color: #020764;}
 </div>
 <div style="clear: both;"></div></center>
 
-<p style="text-align:center;"><input type="checkbox" name="checkbox_name" value="checkox_value">Jag lovar att jag absolut inte hittade på personuppgifterna.</input></p>
+<p style="text-align:center;"><input type="checkbox" name="checkbox_name" value="checkox_value">Jag lovar och svär att jag verkligen försökte ge mina riktiga personuppgifter.</input></p>
 
        <p style="text-align:center;"><button type="submit" value="Submit">Skapa konto</button></p>
      </form>
