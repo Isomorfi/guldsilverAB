@@ -3,10 +3,7 @@ session_start();
 include("db_connection.php");
 
 
-
-if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
-	echo "Inloggad som " . $_SESSION['username'] . ".";
-} else {
+if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 	echo "Du behöver logga in för åtkomst till affären.";
 	header("Location: home.php");
 	die;
@@ -44,23 +41,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		}
 	}
 
-	/*if (isset($_POST['change'])) {
-		$_SESSION['productID'] = $prodid;
-		$_SESSION['productname'] = $prodname;
-		$_SESSION['price'] = $pricee;
-		$_SESSION['unit'] = $unit;
-		$_SESSION['info'] = $desc;
-		$_SESSION['url'] = $url;
-		$_SESSION['stock'] = $stock;
-		$_SESSION['change'] = true;
-
-		if($_SESSION['username'] === "Admin"){
-			$_SESSION['postdata'] = $_POST;
-			unset($_POST);
-			//header("Location: createProduct.php");
-			//die;
-		}
-	}*/
 
 	if (isset($_POST['Delete'])) {
 		$commentid = $_POST['Delete'];
@@ -180,19 +160,20 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 				$quantity = $quantity + $insquan;
 				$sql = "Update db19880310.OrderItems SET Quantity='$quantity' WHERE OrderID='$orderID' AND ProductID='$prodid'";
 				if($conn->query($sql)) {
-					echo " Updaterat db";
-					echo " Orderid = " . $orderID;
-					echo " Quantity = " . $quantity;
+					
 				}
 			}
-			
-			}
-		$_SESSION['postdata'] = $_POST;
-		unset($_POST);
-		header("Location: products.php");
-		die;
-
+			$_SESSION['postdata'] = $_POST;
+                        unset($_POST);
+                        header("Location: basket.php");
+                        die;
 		}
+                else {
+                    echo '<script>alert("Det finns inte nog många enheter av denna produkt eller så har du inte nog mycket pengar.")</script>';
+                }
+		
+
+	}
 	
 }
 
@@ -211,7 +192,30 @@ h4   {color: #020764;}
 </head>
 <body>
 
-<h1>Guld och silver AB</h1>
+<h1>Guld och silver AB - Produkter</h1>
+
+<?php
+
+if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
+<style type="text/css">
+    .fieldset-auto-width {
+         display: inline-block;
+	text-align:left;
+    }
+</style>
+
+    <fieldset class="fieldset-auto-width">
+        <?php
+    
+	echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+?>
+    </fieldset>
+<?php
+}
+
+?>
+<br>
+<br>
 
 <a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
 
@@ -285,9 +289,9 @@ echo "<p style=\"text-align:center;\"><a href=\"$link2?ProductID=$prodid\"><butt
 
 
 if($quantity > 0 && $_SESSION['Stock'] >= $quantity) {
-?>
+
     echo '<script>alert($quantity . " " . $unit . " finns nu i varukorgen!")</script>';
-<?php
+
 }
 
 if($_SESSION['username'] !== "Admin") {?>
@@ -386,7 +390,8 @@ if(($_SESSION['username'] === $row['Username'] && (!isset($row['Answers']))) || 
 ?>
 
 </fieldset>
-
-
+<center>
+<p>
+&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
 </body>
 </html>

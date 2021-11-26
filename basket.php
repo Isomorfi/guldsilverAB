@@ -4,11 +4,9 @@ session_start();
 include("db_connection.php");
 
 
-if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {	
-	echo "Inloggad som " . $_SESSION['username'] . ".";
-} else {
+if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 	echo "Du behöver logga in för åtkomst till affären.";
-	header("Location: home.php");	
+	header("Location: home.php");
 	die;
 	
 }
@@ -18,6 +16,8 @@ if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
 $username = $_SESSION['username'];
 $orderID = '';
 $total = 0;
+$weight = 0;
+$shippingcost = 0;
 
 $sql = "DELETE FROM OrderItems WHERE Quantity='0'";
 $conn->query($sql);
@@ -26,34 +26,59 @@ $conn->query($sql);
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
     if (isset($_POST['Betala'])) {
+        if(isset($_POST['pickup']) ^ isset($_POST['ship'])) { // ena eller andra
 		$orderID = $_POST['Betala'];
 		$_SESSION['orderID'] = $orderID;
 		$total = $_POST['tot'];
 
+                
+                $sql = "SELECT Balance FROM Wallet WHERE Username='$username'";
+                $res = mysqli_query($conn, $sql);
+		$data = mysqli_fetch_assoc($res);
+		$balance = $data['Balance'];
+                  
+                if($balance >= $total) {
+                    
+                    if(isset($_POST['ship'])) {
+                        $shippingcost = $_POST['shipcost'];
+                        $balance = $balance - $total - $shippingcost;
+                        $sql = "UPDATE db19880310.Orders SET Status='Ordered', ShippingCost='$shippingcost', Delivery='Shipping', orderDate=CURRENT_TIMESTAMP, TotalCost='$total' WHERE Username='$username' AND OrderID='$orderID'"; 
+                        $conn->query($sql);
+                    }
+                    else {
+                        $shippingcost = 0;
+                        $balance = $balance - $total;
+                        $sql = "UPDATE db19880310.Orders SET Status='Ordered', ShippingCost='$shippingcost', Delivery='Pick up', orderDate=CURRENT_TIMESTAMP, TotalCost='$total' WHERE Username='$username' AND OrderID='$orderID'"; 
+                        $conn->query($sql);
+                    }
+                
+                    $_SESSION['balance'] = $balance;
 
-        $sql = "UPDATE db19880310.Orders SET Status='Ordered' WHERE Username='$username' AND OrderID='$orderID'"; 
-		$conn->query($sql);
-
-		$sql = "UPDATE db19880310.Orders SET orderDate=CURRENT_TIMESTAMP, TotalCost='$total' WHERE Username='$username' AND OrderID='$orderID'"; 
-		$conn->query($sql);
-
-		header("Location: checkout.php");	
-		die;
+                    $sql = "UPDATE db19880310.Wallet SET Balance='$balance' WHERE Username='$username'"; 
+                    $conn->query($sql);
+                    
+                    header("Location: checkout.php");	
+                    die;
+                }
+                else {
+                    echo '<script>alert("Du har inte nog med pengar för att kunna handla.")</script>';
+                }
+        }
+        else {
+            echo '<script>alert("Du måste välja ett leveransalternativ.")</script>';
+        }
     }
 
 
-	//Gör funktion av detta?
+	
 	if (isset($_POST['change'])) {
-		echo "hej";
+		
 		$orderID = $_POST['order'];
 		$_SESSION['OrderID'] = $orderID;
 		$newquantity = $_POST['changegold'];
 		$prodid = $_POST['change'];
 
-		echo "prodid = " . $prodid;
-		echo "orderid = " . $orderID;
 
-		
 		$sql = "SELECT Stock FROM db19880310.Products WHERE ProductID='$prodid'";
 		
 		$res = mysqli_query($conn, $sql);
@@ -102,7 +127,30 @@ h3   {color: #020764;}
 </head>
 <body>
 
-<h1>Guld och silver AB - Min Kundvagn</h1>
+<h1>Guld och silver AB - Varukorg</h1>
+
+<?php
+
+if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
+<style type="text/css">
+    .fieldset-auto-width {
+         display: inline-block;
+	text-align:left;
+    }
+</style>
+
+    <fieldset class="fieldset-auto-width">
+        <?php
+    
+	echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+?>
+    </fieldset>
+<?php
+}
+
+?>
+<br>
+<br>
 
 <a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
 <a href="mypages.php"><button type="submit" value="Submit">Mina sidor</button></a>
@@ -129,6 +177,8 @@ $prodname = $data['ProductName'];
 $src = $data['PicSrc'];
 $prodid = $data['ProductID'];
 $orderID = $data['OrderID'];
+$weight += $data['Weight'] * $quantity;
+
 
 
 
@@ -168,29 +218,49 @@ $conn->query($costupdate);
 }
 ?>
 
+<fieldset>
+     <p style="text-align:center;"><label>Fraktkostnad:</label></p>
 
+    <?php
+    $shippingcost = ceil($weight/1000) * 49; 
+    echo "<p style=\"text-align:center;\">" . $shippingcost . " kr." . "</p>"; 
+    ?>
+</fieldset>
 
 
 
 <!-- totalpris och betala -->
 <fieldset>
-	<p style="text-align:center;">
-	<p style="text-align:center;"><label>Totalt pris: <?php echo $total . " kr."?></label></p>
+	
 	
 	<form name="form" method="POST">
 
 <?php
 if($total != 0) {
 ?>
-	<input type="hidden" name="tot" value="<?php echo $total;?>">
-	<p style="text-align:center;"><button type="submit" onclick="alert('Köp genomfört')"value="<?php echo $orderID?>" name="Betala">Betala</button></p>
+            
+            <p style="text-align:center;"><label>Välj ett alternativ:</label></p><br>
+        <p style="text-align:center;"><input type="checkbox" name="pickup" value="Hämta på lager">Hämta på lager i Kolsva.</input></p>
+        <?php echo "<p style=\"text-align:center;\">" . "Totalt: " . $total . " kr" . "</p>"; ?>
+        <br><p style="text-align:center;"><input type="checkbox" name="ship" value="Skickas">Frakta med PostNord.</input></p>
+	<?php
+            $totwithship = $total + $shippingcost;
+            echo "<p style=\"text-align:center;\">" . "Totalt: " . $totwithship . " kr." . "</p>";
+            ?>
+        <input type="hidden" name="tot" value="<?php echo $total;?>">
+        <input type="hidden" name="shipcost" value="<?php echo $shippingcost;?>">
+        <br>
+        
+        
+	<p style="text-align:center;"><button type="submit" value="<?php echo $orderID?>" name="Betala">Betala</button></p>
 <?php
 }
 ?>
 
 </form>
 </fieldset>
-
-
+<center>
+<p>
+&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
 </body>
 </html>

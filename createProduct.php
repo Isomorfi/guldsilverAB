@@ -3,11 +3,9 @@ session_start();
 
 include("db_connection.php");
 
-if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true && $_SESSION['username'] === "Admin") {	
-	echo "Inloggad som " . $_SESSION['username'] . ".";
-} else {
-	echo " Endast admin har tillgång till denna sida.";
-	header("Location: home.php");	
+if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
+	echo "Du behöver logga in för åtkomst till affären.";
+	header("Location: home.php");
 	die;
 	
 }
@@ -26,6 +24,7 @@ if(isset($_GET['ProductID'])){
 	$info = $data10['Description'];
 	$stock = $data10['Stock'];
 	$unit = $data10['Unit'];
+        $weight = $data10['Weight'];
 
 
 }
@@ -37,6 +36,7 @@ else {
 	$info = '';
 	$stock = '';
 	$unit = '';
+        $weight = '';
 }
 
 
@@ -46,6 +46,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$price = $_POST['price'];
 		$url = $_POST['url'];
 		$info = $_POST['info'];
+                $weight = $_POST['weight'];
 		if(isset($_POST['pricetype'])) {
                 		$unit = $_POST['pricetype'];
 		}
@@ -54,10 +55,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		}
 		$stock = $_POST['stock'];
 		
-		if(strlen($name) > 0 && strlen($price) > 0 && strlen($url) > 0 && strlen($info) > 0 && strlen($stock) >= 0 && strlen($unit) > 0) {
+		if(strlen($name) > 0 && strlen($price) > 0 && strlen($url) > 0 && strlen($weight) > 0 && strlen($info) > 0 && strlen($stock) >= 0 && strlen($unit) > 0) {
 			
 			if($prodid == 0) {
-				$sql = "INSERT INTO Products (ProductName, Price, PicSrc, Stock, Description, Unit) VALUES ('$name', '$price', '$url', '$stock', '$info', '$unit')";
+				$sql = "INSERT INTO Products (ProductName, Price, PicSrc, Stock, Description, Unit, Weight) VALUES ('$name', '$price', '$url', '$stock', '$info', '$unit', '$weight')";
 				if ($conn->query($sql) === TRUE) {
 					echo '<script>alert("Ny produkt skapad!")</script>';
 					}
@@ -66,7 +67,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         		}
 			}
 			else {
-				$sql = "UPDATE Products SET Productname='$name', Price='$price', PicSrc='$url', Stock='$stock', Description='$info', Unit='$unit' WHERE ProductID='$prodid'";	
+				$sql = "UPDATE Products SET Productname='$name', Price='$price', PicSrc='$url', Stock='$stock', Description='$info', Unit='$unit', Weight='$weight' WHERE ProductID='$prodid'";	
 				if ($conn->query($sql) === TRUE) {
 					echo '<script>alert("Produkt uppdaterad!")</script>';
 				}
@@ -96,7 +97,30 @@ p    {color: #020764;}
 </head>
 <body>
 
-<h1>Guld och silver AB - Skapa/uppdatera produkt</h1>
+<h1>Guld och silver AB</h1>
+
+<?php
+
+if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
+<style type="text/css">
+    .fieldset-auto-width {
+         display: inline-block;
+	text-align:left;
+    }
+</style>
+
+    <fieldset class="fieldset-auto-width">
+        <?php
+    
+	echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+?>
+    </fieldset>
+<?php
+}
+
+?>
+<br>
+<br>
 
 <a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
 
@@ -122,7 +146,8 @@ p    {color: #020764;}
 <p><label for="productname">Produktnamn:</label></p><br>
 <p><label for="price">Pris:</label></p><br>
 <p><label for="url">URL:</label></p><br><br>
-<p><label for="url">Lagersaldo:</label></p><br>
+<p><label for="bal">Lagersaldo:</label></p><br>
+<p><label for="weight">Vikt (gram):</label></p><br>
 <p><label for="info">Produktinfo:</label></p>
 </div>
   <div style="width:350px; float:left;">
@@ -138,6 +163,7 @@ p    {color: #020764;}
   <br></p><br>
 <p><input type="url" id="text" value="<?php echo $url?>" name="url"><label></p><br>
 <p><input type="text" id="text" value="<?php echo $stock?>" name="stock"><label></p><br>
+<p><input type="text" id="text" value="<?php echo $weight?>" name="weight"><label></p><br>
 <p><textarea name="info" cols="40" rows="5"><?php echo $info?></textarea></p>
 </div>
 </div>
@@ -148,7 +174,8 @@ p    {color: #020764;}
        <p style="text-align:center;"><button type="submit" name="create" value="Submit">Skicka</button></p>
      </form></fieldset>
 </fieldset>
-
-
+<center>
+<p>
+&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
 </body>
 </html>

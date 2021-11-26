@@ -39,42 +39,49 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	strlen($password) > 0 && strlen($password2) > 0 && strlen($_SESSION['address']) > 0 && strlen($_SESSION['zip']) > 0 && strlen($_SESSION['city']) > 0 &&
 	strlen($_SESSION['country']) > 0 && strlen($_SESSION['email']) > 0 && strlen($_SESSION['phone']) > 0) {
 		if($password === $password2) {
-                    if(is_numeric($ssn) && strlen($ssn) == 10) {
-                        if(is_numeric($_SESSION['zip'])) {
-                            if(is_numeric($_SESSION['phone'])) {
-                                if(isset($_POST['checkbox_name'])) {
-				$hash_pwd = sha1($password);
+            if(is_numeric($ssn) && strlen($ssn) == 10) {
+                if(is_numeric($_SESSION['zip'])) {
+                    if(is_numeric($_SESSION['phone'])) {
+                        if(isset($_POST['checkbox_name'])) {
+							$hash_pwd = sha1($password);
 
                             $sql = "INSERT INTO db19880310.Customers (Username, Firstname, Lastname, Password, SSN, Address, ZIP, City, Country, Email, Phone)
-                VALUES ('$username', '$firstname', '$lastname', '$hash_pwd', '$ssn', '".$_SESSION['address']."', '".$_SESSION['zip']."', '".$_SESSION['city']."', '".$_SESSION['country']."', '".$_SESSION['email']."', '".$_SESSION['phone']."')";
+                					VALUES ('$username', '$firstname', '$lastname', '$hash_pwd', '$ssn', '".$_SESSION['address']."', '".$_SESSION['zip']."', '".$_SESSION['city']."', '".$_SESSION['country']."', '".$_SESSION['email']."', '".$_SESSION['phone']."')";
 
-                            	if ($conn->query($sql) === TRUE) {
-					header("Location: store.php");
-					die;
-                            	} else {
-					echo "Användarnamnet är redan upptaget. Välj ett annat.";
-                            	}
-                            } else {
-                                echo "Felaktigt angivet telefonnummer.";
+                            if ($conn->query($sql) === TRUE) {
+								
+								// Skapan en plånbok för ny användare
+				$sql = "INSERT INTO Wallet (Username, Balance) VALUES ('$username', '0')";
+				$conn->query($sql);
+
+				header("Location: wallet.php");
+				die;
+                            } 
+                            else {
+				echo "Användarnamnet är redan upptaget. Välj ett annat.";
                             }
-			
-			} else {
-				echo "Du måste godkänna villkoren.";
-			}
-                            
-                        } else {
-                            echo "Felaktigt angivet postnummer.";
+                        } 
+						else {
+                            echo "Felaktigt angivet telefonnummer.";
                         }
-                        
-                    } else {
-                        echo "Felaktigt angivet personnummer.";
-                    }
-
-            		
-		} else {
+					} 
+					else {
+						echo "Du måste godkänna villkoren.";
+					}          
+                } 
+				else {
+                    echo "Felaktigt angivet postnummer.";
+                }       
+            } 
+			else {
+                echo "Felaktigt angivet personnummer.";
+            }	
+		} 
+		else {
 			echo "Lösenord överenstämmer inte.";
 		}
-	} else {
+	} 
+	else {
 		echo "Fält kan ej lämnas tomma!";
 	}
 }
@@ -93,7 +100,9 @@ p    {color: #020764;}
 </head>
 <body>
 
-<h1>Guld och silver AB</h1>
+<h1>Guld och silver AB - Skapa konto</h1>
+
+<a href="home.php"><button type="submit" value="Submit">Hem</button></a>
 
 <fieldset>
 <form name="form" method="POST">
@@ -134,12 +143,13 @@ p    {color: #020764;}
 </div>
 <div style="clear: both;"></div></center>
 
-<p style="text-align:center;"><input type="checkbox" name="checkbox_name" value="checkox_value">Härmed godkänner jag debitering via 14 dagars faktura, skickad till angiven adress.<br> Utebliven betalning resulterar i exponentiellt ökande ränta varje vecka med start<br>på 100% av den totala köpessumman. Frakt sker med Postnord. Guld och<br>silver AB tar inget ansvar för posthanteringen.</input></p>
+<p style="text-align:center;"><input type="checkbox" name="checkbox_name" value="checkox_value">Jag lovar att jag absolut inte hittade på personuppgifterna.</input></p>
 
        <p style="text-align:center;"><button type="submit" value="Submit">Skapa konto</button></p>
      </form>
 </fieldset>
-
-
+<center>
+<p>
+&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
 </body>
 </html>

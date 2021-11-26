@@ -4,11 +4,9 @@ session_start();
 include("db_connection.php");
 
 
-if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {	
-	echo "Inloggad som " . $_SESSION['username'] . ".";
-} else {
+if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 	echo "Du behöver logga in för åtkomst till affären.";
-	header("Location: home.php");	
+	header("Location: home.php");
 	die;
 	
 }
@@ -37,6 +35,28 @@ h3   {color: red;}
 
 <h1>Guld och silver AB - Order</h1>
 
+<?php
+
+if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
+<style type="text/css">
+    .fieldset-auto-width {
+         display: inline-block;
+	text-align:left;
+    }
+</style>
+
+    <fieldset class="fieldset-auto-width">
+        <?php
+    
+	echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+?>
+    </fieldset>
+<?php
+}
+
+?>
+<br>
+<br>
 <a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
 <a href="mypages.php"><button type="submit" value="Submit">Mina sidor</button></a>
 <a href="store.php"><button type="submit" value="Submit">Produkter</button></a>
@@ -81,7 +101,8 @@ while ($row = mysqli_fetch_assoc($result)) {
     echo "<p>" . "Telefon " . $row['Phone'] . "</p>";
     echo "<br>";
     echo "Leveranssätt";
-    echo "<p>" . "PostNord" . "</p>";
+    echo "<p>" . $row['DELIVERY'] . "</p>";
+    echo "<p>" . "Leveranskostnad: " . $row['ShippingCost'] . " kr" . "</p>";
     echo "<br>";
     echo "Din beställning";
 }
@@ -130,13 +151,16 @@ $data3 = mysqli_fetch_assoc($res3);
 <?php
 }
 }
-$sql3 = "SELECT TotalCost FROM Orders WHERE OrderID='$orderID'";
+$sql3 = "SELECT * FROM Orders WHERE OrderID='$orderID'";
 $res3 = mysqli_query($conn, $sql3);
 $data3 = mysqli_fetch_assoc($res3);
 ?>
-<p>Orderkostnad: <?php echo $data3['TotalCost']?> kr.</p>
-
-   
+<p style="text-align:center;">Orderkostnad:</p>
+<?php echo "<p style=\"text-align:center;\">" . $data3['TotalCost'] . " kr + " . $data3['ShippingCost'] . " kr frakt." . "</p>";
+echo "<br>";
+$tot = $data3['TotalCost'] + $data3['ShippingCost'];
+echo "<p style=\"text-align:center;\">" . "Total kostnad: " . $tot . " kr." . "</p>";
+   ?>
    </fieldset></center>
 <br>
 <?php
@@ -145,6 +169,8 @@ $data3 = mysqli_fetch_assoc($res3);
 ?>
 
 </fieldset>
-
+<center>
+<p>
+&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
 </body>
 </html>

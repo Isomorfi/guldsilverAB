@@ -39,7 +39,9 @@ p    {color: #020764;}
 </head>
 <body>
 
-<h1>Guld och silver AB</h1>
+<h1>Guld och silver AB - Logga in</h1>
+
+<a href="home.php"><button type="submit" value="Submit">Hem</button></a>
 
 <fieldset>
 <form name="form" method="POST">
@@ -52,7 +54,8 @@ p    {color: #020764;}
        <p style="text-align:center;"><button type="submit" value="Submit">Logga in</button></p>
      </form>
 </fieldset>
-
-
+<center>
+<p>
+&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
 </body>
 </html>

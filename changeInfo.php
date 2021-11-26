@@ -3,11 +3,9 @@ session_start();
 
 include("db_connection.php");
 
-if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {	
-	echo "Inloggad som " . $_SESSION['username'] . ".";
-} else {
+if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 	echo "Du behöver logga in för åtkomst till affären.";
-	header("Location: home.php");	
+	header("Location: home.php");
 	die;
 	
 }
@@ -96,6 +94,29 @@ p    {color: #020764;}
 
 <h1>Guld och silver AB - Ändra konto</h1>
 
+<?php
+
+if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
+<style type="text/css">
+    .fieldset-auto-width {
+         display: inline-block;
+	text-align:left;
+    }
+</style>
+
+    <fieldset class="fieldset-auto-width">
+        <?php
+    
+	echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+?>
+    </fieldset>
+<?php
+}
+
+?>
+<br>
+<br>
+
 <a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
 
 <a href="mypages.php"><button type="submit" value="Submit">Mina sidor</button></a>
@@ -144,7 +165,8 @@ $pw = $data1['Password'];
     <p style="text-align:center;"><button type="submit" value="Submit" name="change">Ändra</button></p>
 </form>
 </fieldset>
-
-
+<center>
+<p>
+&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
 </body>
 </html>

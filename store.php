@@ -6,9 +6,7 @@
 session_start();
 
 
-if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {
-	echo "Inloggad som " . $_SESSION['username'] . ".";
-} else {
+if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 	echo "Du behöver logga in för åtkomst till affären.";
 	header("Location: home.php");
 	die;
@@ -25,7 +23,12 @@ $quantity = '';
 $productID = '';
 $sql10 = '';
 
-
+$sql = "SELECT Balance FROM Wallet WHERE Username='$username'";
+$res = mysqli_query($conn, $sql);
+$data = mysqli_fetch_assoc($res);
+if(isset($data['Balance'])){
+    $_SESSION['balance'] = $data['Balance'];
+}
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
 
@@ -74,7 +77,30 @@ p    {color: #020764;}
 </head>
 <body>
 
-<h1>Guld och silver AB</h1>
+<h1>Guld och silver AB - Produkter</h1>
+
+<?php
+
+if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
+<style type="text/css">
+    .fieldset-auto-width {
+         display: inline-block;
+	text-align:left;
+    }
+</style>
+
+    <fieldset class="fieldset-auto-width">
+        <?php
+    
+	echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+?>
+    </fieldset>
+<?php
+}
+
+?>
+<br>
+<br>
 
 <a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
 
@@ -163,7 +189,8 @@ while($data = mysqli_fetch_assoc($res)){
 
 
 
-
-
+<center>
+<p>
+&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
 </body>
 </html>

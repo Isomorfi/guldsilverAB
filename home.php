@@ -11,6 +11,7 @@ unset($_SESSION['city']);
 unset($_SESSION['country']);
 unset($_SESSION['email']);
 unset($_SESSION['phone']);
+unset($_SESSION['balance']);
 
 
 $sql = "SELECT Orders.OrderID, OrderItems.ProductID, OrderItems.Quantity, Orders.OrderDate, Orders.Status

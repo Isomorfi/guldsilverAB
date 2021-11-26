@@ -82,7 +82,8 @@ p    {color: blue;}
        <p style="text-align:center;"><button type="submit" value="Submit">Skicka</button></p>
      </form>
 </fieldset>
-
-
+<center>
+<p>
+&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
 </body>
 </html>
