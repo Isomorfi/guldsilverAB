@@ -69,25 +69,23 @@ else {
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-body {background-color: powderblue;}
-h1   {color: #020764;}
-p    {color: #020764;}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Guld och silver AB - Produkter</h1>
+<header>
 
-<?php
+                <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
+                <div class="topnav">
+
+                   <a href="#">
+                       <h1>Sverige-mineralen AB</h1>
+                   </a>
+
+                   <div id="topnav-right">
+                       <?php
 
 if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
-<style type="text/css">
-    .fieldset-auto-width {
-         display: inline-block;
-	text-align:left;
-    }
-</style>
 
     <fieldset class="fieldset-auto-width">
         <?php
@@ -99,38 +97,40 @@ if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
 }
 
 ?>
-<br>
-<br>
-
-<a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
-
-<a href="mypages.php"><button type="submit" value="Submit">Mina sidor</button></a>
-
-
-
-
-<?php
+                       <?php
 
 if($_SESSION['username'] === "Admin") {?>
 
-<a href="createProduct.php"><button type="submit" value="Submit">Skapa produkt</button></a>
+                       <a href="createProduct.php"><h2>Skapa produkt</h2></a>
 <?php
 }
 ?>
-<br>
-<a href="basket.php"><input type="image" src="https://purepng.com/public/uploads/large/purepng.com-shopping-cartshoppingcarttrolleycarriagebuggysupermarkets-1421526532323sy0um.png" name="submit" width="60" height="60"/></a>
+                      <a href="mypages.php">
+                         <h2>Mina sidor</h2>
+                      </a>
+                      <a href="home.php">
+                         <h2>Logga ut</h2>
+                      </a>
+                       <a href="basket.php"><input type="image" src="https://purepng.com/public/uploads/large/purepng.com-shopping-cartshoppingcarttrolleycarriagebuggysupermarkets-1421526532323sy0um.png" name="submit" width="60" height="60"/>
+                       </a>
+                       
+                   </div>
+                </div>
 
-<!-- nytt -->
+      </header>
+
+
+    <br><br>
 <form name="form" method="POST">
 <p style="text-align:center;"><label for="search">Sök produkt: </label><input type="text" id="search" name="search">
 <button type="submit" name="searchP" value="SearchP">Sök</button></p>
 
      </form>
-<!-- nytt -->
 
+ <center>
 <?php
 $link = 'products.php';
-
+$counter = 0;
 $res = mysqli_query($conn, $sql10);
 while($data = mysqli_fetch_assoc($res)){
     $prodid = $data['ProductID'];
@@ -141,56 +141,72 @@ while($data = mysqli_fetch_assoc($res)){
 
 	
     $status = $data['Available'];
-
+    $counter++;
+    
+    ?>
+     <div class="a">
+         <fieldset class="fieldset-auto-width3">
+         <?php
     if($_SESSION['username'] === "Admin") {
         ?>
 
-        <fieldset>
+    
+    
+    
+        
         <form name="form" method="POST">
-        <div style="width:300px; display: block; margin-left: auto; margin-right: auto;">
+       
+           <?php
+                if($status) { ?>
+                   <p style="text-align:center;">
+                       <label for="fname">
+                           <p style="text-decoration: underline; text-align:center;">Tillgänglig produkt<br><br>
+                       </label>
+                   </p></p>
 
-        <?php if($status) { ?>
-            <p style="text-align:center;">
-                <label for="fname">
-                    <p style="text-decoration: underline; text-align:center;">Tillgänglig produkt<br><br>
-                </label>
-            </p></p></div>
+               <?php } else { ?>
+                   <p style="text-align:center;">
+                       <label for="fname">
+                           <p style="text-decoration: underline; text-align:center; color: red;">Otillgänglig produkt<br><br>
+                       </label>
+                   </p></p>
+               <?php } ?>
 
-        <?php } else { ?>
-            <p style="text-align:center;">
-                <label for="fname">
-                    <p style="text-decoration: underline; text-align:center;">Ej tillgänglig produkt<br><br>
-                </label>
-            </p></p></div>
-        <?php } ?>
+               <p style="text-align:center;"><button type="submit" name="status" value="<?php echo $prodid ?>">Uppdatera</button></p>
 
-        <p style="text-align:center;"><button type="submit" name="status" value="<?php echo $prodid ?>">Uppdatera</button></p>
+               </form>
 
-        </form>
-
-    <?php
+           
+       <?php
+       
     }
-    if(!$status && $_SESSION['username'] != "Admin") {
-        continue;
-    }
+           
+           if(!$status && $_SESSION['username'] != "Admin") {
+               continue;
+           }
 
-    echo "<p style=\"text-align:center;\"><a href=\"$link?ProductID=$prodid\"><input type=\"image\" src=\"$src\" 
-    name=\"submit\" width=\"250\" height=\"200\"/></a></p>";
+           ?>
 
-    echo "<p style=\"text-align:center;\"><a href=\"$link?ProductID=$prodid\">$prodname" . "<br><br>" . "Pris: " . $pricee . "kr/" . $unit . "</a></p>";
-    ?>
+                   <?php echo "<p style=\"text-align:center;\"><a href=\"$link?ProductID=$prodid\"><input type=\"image\" src=\"$src\" 
+           name=\"submit\" width=\"200\" height=\"200\"/></a></p>";?>
+               <label><?php echo "<p style=\"text-align:center;\"><a href=\"$link?ProductID=$prodid\">$prodname" . "<br><br>" . "Pris: " . $pricee . "kr/" . $unit . "</a></p>";
+               ?></label></fieldset></div>
+           <?php if($counter == 4) {
+               ?> </center> <?php $counter = 0; ?><br> <center> <?php
+           }
 
-</fieldset>
-<?php
-}
+    
+    
+           
 
-
+           }
 ?>
 
 
-
+ </center>
 <center>
 <p>
+    <br><br>
 &copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
 </body>
 </html>

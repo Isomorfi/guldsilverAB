@@ -1,0 +1,47 @@
+body {
+    box-sizing: border-box;
+    margin: 0;
+    background-color: white;
+}
+    
+header {
+    background-color: powderblue;
+    height:100px;
+}
+    
+.topnav a {
+    float: left;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px 10px;
+    }
+       
+#topnav-right {
+    float: right;    
+}
+
+.a {
+    display: inline-block;
+    position: relative; 
+    margin: 1%;
+
+    width: 200px;
+    height: 200px;
+    padding: 10px 10px;
+}
+
+.fieldset-auto-width {
+	display: inline-block;
+	text-align:left;
+        border: 0;  
+}
+
+.fieldset-auto-width3 {
+	display: inline-block;
+}
+
+.fieldset-auto-width2 {
+    display: inline-block;
+    text-align:left;
+}

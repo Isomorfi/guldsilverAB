@@ -1,4 +1,9 @@
 <?php
+include("db_connection.php");
+
+
+
+
 session_start();
 include("db_connection.php");
 unset($_SESSION['signedin']);
@@ -80,19 +85,16 @@ $conn->query($sql3);
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-body {background-color: powderblue;}
-h1   {color: #020764;}
-p    {color: #020764;}
-h4   {color: #020764;}
-</style>
-</head>
-<body>
-
-<?php
+<Head>      
+    <link rel="stylesheet" href="style.css">
+    <Title>     
+    Sverige-mineral AB  
+    </Title>  
+   
+    </Head>  
+    
+    <BODY>
+        <?php
 
 
 
@@ -111,60 +113,79 @@ $Quan = $Quan + $data['Quantity'];
 
 }
 ?>
+        <header>
 
-<h1>Guld och silver AB</h1>
+                <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
+                <div class="topnav">
+
+                   <a href="#">
+                       <h1>Sverige-mineralen AB</h1>
+                   </a>
+
+                   <div id="topnav-right">
+                      <a href="login.php">
+                         <h2>Logga in</h2>
+                      </a>
+                      <a href="signup.php">
+                         <h2>Skapa konto</h2>
+                      </a>
+                       
+                   </div>
+                </div>
+
+      </header>
+        
+
+
+    <center><h1>Välkommen till Sveriges minsta e-handelsbutik för mineraler.</h1></center>
+        <br>
+        <br>
+        
+
+
+
+<div style="width:650px; margin:0 auto;">
+
+    <div style="width:300px; float:left;">
+        <p><label for="fname"><br><br>Våra huvudprodukter, guld och silver, har en renhet på 99,9% och utvinns i våra egna gruvor på Tallvik i Överkalix i norr respektive Kolsva i söder. Att produkterna utvinns i Sverige och har en så pass hög halt av guld och silver i kombination med vårat låga pris, som är 50% under marknadsvärde, gör våra produkter helt unika. <br><br> För att ta del av våra erbjudanden krävs det att du registrerar ett konto hos oss.</label></p>
+    </div>
+
+    <div style="width:300px; float:right;">
+        <p><img src="https://packbud.com/sites/packbud/files/field/gmapimagei154428739gmapimage106949.png" alt="Logo" width="350" height="300"></p>
+
+    </div>
+
+
+</div>
+<div style="clear: both;"></div>
 
 
 
 
 
-<a href="signup.php"><button type="submit" value="Submit">Skapa konto</button></a>
-
-<a href="login.php"><button type="submit" value="Submit">Logga in</button></a>
-
-<p style="text-align:center;"><label for="fname">Välkommen till Sveriges minsta e-handelsbutik för guld och silver.<br> Våra produkter består av 99,9% rent guld och silver och utvinns i våra <br> egna gruvor på Tallvik i Överkalix i norr respektive Kolsva i söder.<br> Att produkterna utvinns i Sverige och har en så pass hög halt av guld och silver<br> i kombination med vårat låga pris, som är 50% under marknadsvärde,<br> gör våra produkter helt unika. <br><br> För att ta del av våra erbjudanden krävs det att du registrerar ett konto hos oss.</label></p>
 
 
-
-<p style="text-align:center;"><img src="https://packbud.com/sites/packbud/files/field/gmapimagei154428739gmapimage106949.png" alt="Logo" width="350" height="300"></p>
-
-
+<br>
+<br>
 <p style="text-align:center;"><label for="fname"><b>Några av våra produkter:</b></label></p>
+        
 
 
-<p style="text-align:center;">
-<img <?php
-    $sql = "SELECT Price, PicSrc FROM db19880310.Products WHERE ProductID='1'";
-    $res = mysqli_query($conn, $sql);
-    $data = mysqli_fetch_assoc($res);
-    ?>
-src="<?php echo $data['PicSrc'] ?>" 
-alt="Logo" width="250" height="200"></p>
-
-<p style="text-align:center;"><label for="fname">99,9% rent guld. Utvunnet och producerat i Överkalix.
-    <br> Pris: <?php echo $data['Price'] ?>kr/g.</label></p>
-<br>
 
 
-<p style="text-align:center;">
-<img <?php
-    $sql = "SELECT Price, PicSrc FROM db19880310.Products WHERE ProductID='2'";
-    $res = mysqli_query($conn, $sql);
-    $data = mysqli_fetch_assoc($res); 
-    ?>
-src="<?php echo $data['PicSrc'] ?>"
-alt="Logo" width="250" height="200"></p>
 
-<p style="text-align:center;"><form action="/action_page.php"></p>
-<p style="text-align:center;"><label for="fname">99,9% rent silver. Utvunnet och producerat i Kolsva.
-    <br> Pris: <?php echo $data['Price'] ?>kr/g.</label></p>
-</form></p><br><br>
-<br><br>
-<p style="text-align:center;"><?php echo "Sedan 2021-11-09 : " . $num . " nya användare - " . $Quan . " sålda produkter."?></p>
-<br>
+    <center>
+        <div class="a"><img src="http://www.thejewellerytube.com/wp-content/uploads/2020/08/fine-gold-bricks-the-jewellery-tube.jpg" alt="Logo" width="200" height="200"><br><br>
+        <label>Guld</label></div>
+<div class="a"><img src="https://www.valutahandel.se/wp-content/uploads/silver-tackor.jpg" alt="Logo" width="200" height="200"><br><br>
+        <label>Silver</label></div>
+<div class="a"><img src="https://agmetalminer.com/mmwp/wp-content/uploads/2021/01/ShawnHempel_AdobeStock_copperbars_012621.jpg" alt="Logo" width="200" height="200"><br><br>
+        <label>Koppar</label></div>
+<div class="a"><img src="https://media.istockphoto.com/photos/diamond-texture-closeup-and-kaleidoscope-top-view-of-round-gemstone-picture-id990183542?k=20&m=990183542&s=612x612&w=0&h=Um2NiUZOuj6UyABQ-vshECNoshXYqQZs_y9GWZs6dQc=" alt="Logo" width="200" height="200"><br><br>
+    <label>Diamant</label></div><br>
+        
+    </center>
 <center>
-<p>
-
-&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
-</body>
-</html>
+    <br><br><br>
+&copy; <?php echo date ('Y') . " Sverige-mineralen AB. All rights reserved."; ?></center>
+    </BODY>

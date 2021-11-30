@@ -46,46 +46,51 @@ $balance = $data['Balance'];
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <style>
-body {background-color: powderblue;}
-h1   {color: #020764;}
-h4   {color: #020764;}
-p    {color: #020764;}
-</style>
+<head>
+    <meta charset="UTF-8">
+	<link rel="stylesheet" href="style.css">
+    <title>     
+        Sverige-mineralen AB
+    </title>  
 </head>
 <body>
 
-<h1>Guld och silver AB - Plånbok</h1>
+<header>
+        <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
+        <div class="topnav">
 
-<?php
+            <a href="store.php">
+                <h1>Sverige-mineralen AB - Plånbok</h1>
+            </a>
 
-if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
-<style type="text/css">
-    .fieldset-auto-width {
-         display: inline-block;
-	text-align:left;
-    }
-</style>
+            <div id="topnav-right">
 
-    <fieldset class="fieldset-auto-width">
-        <?php
-    
-	echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $balance . " kr." . "</p>";
-?>
-    </fieldset>
-<?php
-}
+                <?php
+                if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
 
-?>
-<br>
-<br>
-<a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
+                    <fieldset class="fieldset-auto-width">
+                    <?php
+                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                    ?>
+                    </fieldset>
+                <?php
+                }
+                ?>
+ 
+                <a href="mypages.php">
+                    <h2>Mina sidor</h2>
+                </a>
+                <a href="home.php">
+                    <h2>Logga ut</h2>
+                </a>
+                <a href="store.php">
+                    <h2>Produkter</h2>
+                </a>
+            </div>
+        </div>
+    </header>
 
-<a href="store.php"><button type="submit" value="Submit">Produkter</button></a>
-
-<a href="mypages.php"><button type="submit" value="Submit">Mina sidor</button></a><br>
+<br><br>
 
 
 <fieldset>

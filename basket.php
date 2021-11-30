@@ -118,103 +118,104 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-body {background-color: powderblue;}
-h1   {color: #020764;}
-p    {color: #020764;}
-h3   {color: #020764;}
-</style>
+
+    <link rel="stylesheet" href="style.css">
+    <title>     
+        Sverige-mineralen AB
+    </title>  
+
 </head>
 <body>
 
-<h1>Guld och silver AB - Varukorg</h1>
+    <header>
+        <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
+        <div class="topnav">
+
+            <a href="store.php">
+                <h1>Sverige-mineralen AB - Kundvagn</h1>
+            </a>
+
+            <div id="topnav-right">
+
+                <?php
+                if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
+
+                    <fieldset class="fieldset-auto-width">
+                    <?php
+                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                    ?>
+                    </fieldset>
+                <?php
+                }
+                ?>
+ 
+                <a href="mypages.php">
+                    <h2>Mina sidor</h2>
+                </a>
+                <a href="home.php">
+                    <h2>Logga ut</h2>
+                </a>
+                <a href="store.php">
+                    <h2>Produkter</h2>
+                </a>
+            </div>
+        </div>
+    </header>
+
+<br><br>
+
 
 <?php
 
-if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
-<style type="text/css">
-    .fieldset-auto-width {
-         display: inline-block;
-	text-align:left;
-    }
-</style>
-
-    <fieldset class="fieldset-auto-width">
-        <?php
-    
-	echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
-?>
-    </fieldset>
-<?php
-}
-
-?>
-<br>
-<br>
-
-<a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
-<a href="mypages.php"><button type="submit" value="Submit">Mina sidor</button></a>
-<a href="store.php"><button type="submit" value="Submit">Produkter</button></a>
-
-<?php
-
-$sql = "SELECT *
-FROM Orders
-INNER JOIN OrderItems ON Orders.OrderID=OrderItems.OrderID
-INNER JOIN Products ON OrderItems.ProductID=Products.ProductID WHERE Username='$username' AND Status='Basket'";
+$sql = "SELECT * FROM Orders
+        INNER JOIN OrderItems ON Orders.OrderID=OrderItems.OrderID
+        INNER JOIN Products ON OrderItems.ProductID=Products.ProductID WHERE Username='$username' AND Status='Basket'";
 $res = mysqli_query($conn, $sql);
 $link = 'products.php';
 $total = 0;
 
 if($res) {
-while($data = mysqli_fetch_assoc($res)){
+    while($data = mysqli_fetch_assoc($res)){
 
-$quantity = $data['Quantity'];
-$price = $data['Price'];
-$totprice = $quantity * $price;
-$unit = $data['Unit'];
-$prodname = $data['ProductName'];
-$src = $data['PicSrc'];
-$prodid = $data['ProductID'];
-$orderID = $data['OrderID'];
-$weight += $data['Weight'] * $quantity;
+        $quantity = $data['Quantity'];
+        $price = $data['Price'];
+        $totprice = $quantity * $price;
+        $unit = $data['Unit'];
+        $prodname = $data['ProductName'];
+        $src = $data['PicSrc'];
+        $prodid = $data['ProductID'];
+        $orderID = $data['OrderID'];
+        $weight += $data['Weight'] * $quantity;
 
+        $total = $total + $totprice;
 
+        $costupdate = "UPDATE OrderItems SET TotalCost='$totprice' WHERE OrderID='$orderID' AND ProductID='$prodid'";
+        $conn->query($costupdate);
 
+    ?>
+    <fieldset>
+        <center>
+        <div style="width:500px;">
+        <div class="a"><p style="text-align:center;"><?php echo "<a href=\"$link?ProductID=$prodid\">";?><input type="image" 
+	        src="<?php echo $src ?>" 
+	        name="submit" width="200" height="150"/></a></p>
+        </div></center>
+    <div style="width:700px; float:right;"><p><?php echo "<a href=\"$link?ProductID=$prodid\">";?><?php echo $prodname?></a></p><p style="text-decoration: underline;"><label>Produkter i varukorgen: <?php echo $quantity . " " . $unit . " " . $prodname . "."?></label></p>
+    <p style="text-decoration: underline;"><label>Kostnad: <?php echo $quantity . " " . $unit . " á " . $price . " kr/" . $unit . ": " . $totprice . " kr."?></label></p>
 
-$total = $total + $totprice;
-
-$costupdate = "UPDATE OrderItems SET TotalCost='$totprice' WHERE OrderID='$orderID' AND ProductID='$prodid'";
-$conn->query($costupdate);
-
-?>
-<fieldset>
-<center>
-<div style="width:500px;">
-  <div style="width:200px; float:left;"><p style="text-align:center;"><?php echo "<a href=\"$link?ProductID=$prodid\">";?><input type="image" 
-	
-	
-	src="<?php echo $src ?>" 
-	name="submit" width="200" height="150"/></a></p>
-</div></center>
-  <div style="width:700px; float:right;"><p><?php echo "<a href=\"$link?ProductID=$prodid\">";?><?php echo $prodname?></a></p><p style="text-decoration: underline;"><label>Produkter i varukorgen: <?php echo $quantity . " " . $unit . " " . $prodname . "."?></label></p>
-<p style="text-decoration: underline;"><label>Kostnad: <?php echo $quantity . " " . $unit . " á " . $price . " kr/" . $unit . ": " . $totprice . " kr."?></label></p>
-
-
-
-<form name="form" method="POST">
-    <p>
-	<label for="username">Ändra varukorgen? Skriv in nytt önskat<br> antal produkter: </label>
-	<input type="text" id="changegold" name="changegold">
-	<input type="hidden" name="order" value="<?php echo $orderID;?>">
-	<button type="submit" value="<?php echo $data['ProductID']?>" name="change">Ändra varukorg</button></p>
-</form></div>
-</div>
-<div style="clear: both;"></div>
-</fieldset>
+    <form name="form" method="POST">
+        <p>
+	        <label for="username">Ändra varukorgen? Skriv in nytt önskat<br> antal produkter: </label>
+	        <input type="text" id="changegold" name="changegold">
+	        <input type="hidden" name="order" value="<?php echo $orderID;?>">
+	        <button type="submit" value="<?php echo $data['ProductID']?>" name="change">Ändra varukorg</button></p>
+    </form></div>
+    </div>
+    <div style="clear: both;"></div>
+    </fieldset>
 
 <?php
-}
+    }
 }
 ?>
 

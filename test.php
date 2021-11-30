@@ -4,82 +4,115 @@ include("db_connection.php");
 
 
 
+session_start();
+include("db_connection.php");
+unset($_SESSION['signedin']);
+unset($_SESSION['username']);
+unset($_SESSION['firstname']);
+unset($_SESSION['lastname']);
+unset($_SESSION['address']);
+unset($_SESSION['zip']);
+unset($_SESSION['city']);
+unset($_SESSION['country']);
+unset($_SESSION['email']);
+unset($_SESSION['phone']);
+unset($_SESSION['balance']);
+
+
+$sql = "SELECT Orders.OrderID, OrderItems.ProductID, OrderItems.Quantity, Orders.OrderDate, Orders.Status
+FROM Orders
+INNER JOIN OrderItems ON Orders.OrderID=OrderItems.OrderID WHERE OrderDate < NOW() - INTERVAL 1 day AND Status='Basket' ORDER BY ProductID ASC";
+$res = mysqli_query($conn, $sql);
+$gold = 0;
+
+
+$current = 0;
+$previous = 0;
+$counter = 0;
+
+// Radera alla kundvagnar som är äldre än ett dygn och har status basket. Återställ lagersaldo.
+
+if (mysqli_num_rows($res) > 0) {
+while($data = mysqli_fetch_assoc($res)) {
+	$ord = $data['OrderID'];
+	$current = $data['ProductID'];
+	if($counter > 0) {
+		if($data['ProductID'] == $previous) {
+			$previous = $current;
+			$gold = $gold + (int)$data['Quantity'];
+		
+		}
+		else {
+			$sql2 = "SELECT Stock FROM Products WHERE ProductID='$previous'";
+			$res2 = mysqli_query($conn, $sql2);
+			$data2 = mysqli_fetch_assoc($res2);
+			$stock = (int)$data2['Stock'] + $gold;
+			$sql1 = "UPDATE Products SET Stock='$stock' WHERE ProductID='$previous'";
+			$res1 = mysqli_query($conn, $sql1);
+			$gold = (int)$data['Quantity'];
+			$counter = 0;
+			$previous = $current;
+		}
+
+
+	}
+	else {
+		$previous = $current;
+		$gold = $gold + (int)$data['Quantity'];
+
+	}
+	$counter = $counter + 1;
+	
+
+}
+
+$sql2 = "SELECT Stock FROM Products WHERE ProductID='$previous'";
+$res2 = mysqli_query($conn, $sql2);
+$data2 = mysqli_fetch_assoc($res2);
+$stock = (int)$data2['Stock'] + $gold;
+$sql1 = "UPDATE Products SET Stock='$stock' WHERE ProductID='$previous'";
+
+$conn->query($sql1);
+
+
+
+$sql4 = "DELETE OrderItems FROM OrderItems INNER JOIN Orders ON Orders.OrderID=OrderItems.OrderID WHERE OrderDate < NOW() - INTERVAL 1 day AND Status='Basket'";
+$conn->query($sql4);
+
+$sql3 = "DELETE Orders FROM Orders WHERE OrderDate < NOW() - INTERVAL 1 day AND Status='Basket'";
+$conn->query($sql3);
+
+}
 ?>
 
-
 <Head>      
+    <link rel="stylesheet" href="style.css">
     <Title>     
-    Add the border using internal CSS  
+    Sverige-mineral AB  
     </Title>  
-    <style type = "text/css">  
-        body {
-         box-sizing: border-box;
-         margin: 0;
-         background-color: white;
-         }
-         
-         header {
-           background-color: powderblue;
-           height:100px;
-         }
-         
-         .topnav a {
-         float: left;
-         color: black;
-         text-align: center;
-         text-decoration: none;
-         padding: 10px 10px;
-         }
-            
-         #topnav-right {
-         float: right;    
-         }
-         .a {
-    display: inline-block;
-    position: relative;
-    margin: 1%;
-
-    width: 200px;
-    height: 200px;
-    padding: 10px 10px;
-
-    }
-    .b {
-    display: inline-block;
-    position: relative;
-    margin: 1%;
-
-    width: 200px;
-    height: 200px;
-    padding: 10px 10px;
-
-    }
-    .c {
-    display: inline-block;
-    position: relative;
-    margin: 1%;
-
-    width: 200px;
-    height: 200px;
-    padding: 10px 10px;
-
-    }
-    .d {
-    display: inline-block;
-    position: relative;
-    margin: 1%;
-
-    width: 200px;
-    height: 200px;
-    padding: 0 10px;
-
-    }
-      
-    </style>  
+   
     </Head>  
     
     <BODY>
-        
+        <?php
+
+
+
+$sql = "SELECT COUNT(Username) as users FROM Customers";
+$res = mysqli_query($conn, $sql);
+    $data = mysqli_fetch_assoc($res);
+$num = $data['users'];
+
+$sql = "SELECT Quantity FROM OrderItems";
+$res = mysqli_query($conn, $sql);
+$Quan = 0;
+while($data = mysqli_fetch_assoc($res)) {
+
+
+$Quan = $Quan + $data['Quantity'];
+
+}
+?>
         <header>
 
                 <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
@@ -90,18 +123,13 @@ include("db_connection.php");
                    </a>
 
                    <div id="topnav-right">
-                      <a href="#">
+                      <a href="login.php">
                          <h2>Logga in</h2>
                       </a>
-                      <a href="#">
+                      <a href="signup.php">
                          <h2>Skapa konto</h2>
                       </a>
-                       <a href="#">
-                         <h2>Om oss</h2>
-                      </a>
-                      <a href="#">
-                         <h2>Kontakta oss</h2>
-                      </a>
+                       
                    </div>
                 </div>
 
@@ -149,12 +177,13 @@ include("db_connection.php");
     <center>
         <div class="a"><img src="http://www.thejewellerytube.com/wp-content/uploads/2020/08/fine-gold-bricks-the-jewellery-tube.jpg" alt="Logo" width="200" height="200"><br><br>
         <label>Guld</label></div>
-<div class="b"><img src="https://www.valutahandel.se/wp-content/uploads/silver-tackor.jpg" alt="Logo" width="200" height="200"><br><br>
+<div class="a"><img src="https://www.valutahandel.se/wp-content/uploads/silver-tackor.jpg" alt="Logo" width="200" height="200"><br><br>
         <label>Silver</label></div>
-<div class="c"><img src="https://agmetalminer.com/mmwp/wp-content/uploads/2021/01/ShawnHempel_AdobeStock_copperbars_012621.jpg" alt="Logo" width="200" height="200"><br><br>
+<div class="a"><img src="https://agmetalminer.com/mmwp/wp-content/uploads/2021/01/ShawnHempel_AdobeStock_copperbars_012621.jpg" alt="Logo" width="200" height="200"><br><br>
         <label>Koppar</label></div>
-<div class="d"><img src="https://media.istockphoto.com/photos/diamond-texture-closeup-and-kaleidoscope-top-view-of-round-gemstone-picture-id990183542?k=20&m=990183542&s=612x612&w=0&h=Um2NiUZOuj6UyABQ-vshECNoshXYqQZs_y9GWZs6dQc=" alt="Logo" width="200" height="200"><br><br>
-        <label>Diamant</label></div>
+<div class="a"><img src="https://media.istockphoto.com/photos/diamond-texture-closeup-and-kaleidoscope-top-view-of-round-gemstone-picture-id990183542?k=20&m=990183542&s=612x612&w=0&h=Um2NiUZOuj6UyABQ-vshECNoshXYqQZs_y9GWZs6dQc=" alt="Logo" width="200" height="200"><br><br>
+    <label>Diamant</label></div><br>
+        
     </center>
 <center>
     <br><br><br>

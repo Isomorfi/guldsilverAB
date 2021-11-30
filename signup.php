@@ -92,17 +92,32 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 <html>
     <head>
         <meta charset="UTF-8">
-        <style>
-body {background-color: powderblue;}
-h1   {color: #020764;}
-p    {color: #020764;}
+<link rel="stylesheet" href="style.css">
 </style>
 </head>
 <body>
+<header>
 
-<h1>Guld och silver AB - Skapa konto</h1>
+                <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
+                <div class="topnav">
 
-<a href="home.php"><button type="submit" value="Submit">Hem</button></a>
+                   <a href="#">
+                       <h1>Sverige-mineralen AB</h1>
+                   </a>
+
+                   <div id="topnav-right">
+                      <a href="home.php">
+                         <h2>Hem</h2>
+                      </a>
+                      <a href="login.php">
+                         <h2>Logga in</h2>
+                      </a>
+                       
+                   </div>
+                </div>
+
+      </header>
+    <br><br><br><br><br><br>
 
 <fieldset>
 <form name="form" method="POST">

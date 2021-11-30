@@ -97,13 +97,18 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	
 		$comment = $_POST['comment'];
 		
-
-		$sql = "INSERT INTO db19880310.Comments (Comment, Username, ProductID, Rating) VALUES ('$comment', '$username', '$prodid', $rating)";  
-		$conn->query($sql);
-		$_SESSION['postdata'] = $_POST;
-		unset($_POST);
-		header("Location: products.php");
-		die;
+                if(strlen($comment) > 0) {
+                
+                    $sql = "INSERT INTO db19880310.Comments (Comment, Username, ProductID, Rating) VALUES ('$comment', '$username', '$prodid', $rating)";  
+                    $conn->query($sql);
+                    $_SESSION['postdata'] = $_POST;
+                    unset($_POST);
+                    //header("Location: products.php");
+                    //die;
+                }
+                else {
+                    echo '<script>alert("Du måste även lämna en kommentar.")</script>';
+                }
 		
 	}
 
@@ -165,8 +170,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 			}
 			$_SESSION['postdata'] = $_POST;
                         unset($_POST);
-                        header("Location: basket.php");
-                        die;
+                        //header("Location: basket.php");
+                        //die;
+                        echo '<script>alert("Produkt tillagd i varukorg.")</script>';
 		}
                 else {
                     echo '<script>alert("Det finns inte nog många enheter av denna produkt eller så har du inte nog mycket pengar.")</script>';

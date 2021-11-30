@@ -19,10 +19,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 $searchtype = $_POST['searchtype'];
              if($_SESSION['username'] !== "Admin") {   
                 
-                $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' AND Username='$username' AND $searchtype LIKE '$searchinput%'";
+                $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' AND Username='$username' AND $searchtype LIKE '$searchinput%' ORDER BY orderdate desc";
              }
              else {
-                 $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' AND $searchtype LIKE '$searchinput%'";
+                 $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' AND $searchtype LIKE '$searchinput%' ORDER BY orderdate desc";
              }
         }
 }
@@ -30,9 +30,9 @@ else {
     
     if($_SESSION['username'] !== "Admin") {
         
-        $sql = "SELECT * FROM db19880310.Orders WHERE Username='$username' AND Status='Ordered'";
+        $sql = "SELECT * FROM db19880310.Orders WHERE Username='$username' AND Status='Ordered' ORDER BY orderdate desc";
     } else {
-        $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered'";
+        $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' ORDER BY orderdate desc";
     }
         
    
@@ -43,45 +43,52 @@ else {
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <style>
-body {background-color: powderblue;}
-h1   {color: #020764;}
-p    {color: #020764;}
-</style>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>     
+        Sverige-mineralen AB
+    </title>  
 </head>
 <body>
 
-<h1>Guld och silver AB - Beställningar</h1>
+<header>
+        <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
+        <div class="topnav">
 
-<?php
+            <a href="store.php">
+                <h1>Sverige-mineralen AB - Beställningar</h1>
+            </a>
 
-if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
-<style type="text/css">
-    .fieldset-auto-width {
-         display: inline-block;
-	text-align:left;
-    }
-</style>
+            <div id="topnav-right">
 
-    <fieldset class="fieldset-auto-width">
-        <?php
-    
-	echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
-?>
-    </fieldset>
-<?php
-}
+                <?php
+                if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
 
-?>
-<br>
-<br>
-<a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
+                    <fieldset class="fieldset-auto-width">
+                    <?php
+                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                    ?>
+                    </fieldset>
+                <?php
+                }
+                ?>
+ 
+                <a href="mypages.php">
+                    <h2>Mina sidor</h2>
+                </a>
+                <a href="home.php">
+                    <h2>Logga ut</h2>
+                </a>
+                <a href="store.php">
+                    <h2>Produkter</h2>
+                </a>
+            </div>
+        </div>
+    </header>
 
-<a href="store.php"><button type="submit" value="Submit">Produkter</button></a>
+<br><br>
 
-<a href="mypages.php"><button type="submit" value="Submit">Mina sidor</button></a><br>
 
 <form name="form" method="POST">
 <p style="text-align:center;"><label>Sök order:</label><input type="text" id="searchinput" name="searchinput">
