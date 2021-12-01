@@ -162,8 +162,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
             if(is_numeric($sum) && $sum > 0 && $sum <= $balance) {
                 if(isset($_POST['checkbox_name'])) {
                     $balance = $balance - $sum;
+
                     $sql = "UPDATE Wallet SET Balance='$balance'";
+                    $_SESSION['balance'] = $balance;
                     if($conn->query($sql)) {
+                       
+                        
                         header("Location: wallet.php");
                         die;
                     }
@@ -194,8 +198,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 						if(is_numeric($sum) && $sum > 0 && $sum <= 100000) {
 							
 							$balance = $balance + $sum;
+
 							$sql = "UPDATE Wallet SET Balance='$balance'";
+                                                        $_SESSION['balance'] = $balance;
 							if($conn->query($sql)) {
+                                                            
+                                                            
 								header("Location: wallet.php");
 								die;
 							}

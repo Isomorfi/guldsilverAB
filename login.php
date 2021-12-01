@@ -17,7 +17,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         
         
 	else {
-            
+           
             // prepare and bind
             $sql = "SELECT Password FROM db19880310.Customers WHERE Username=?";
             $stmt = $conn->prepare($sql);
@@ -37,6 +37,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     echo '<script>alert("Felaktigt lösenord.")</script>';
             }
             $stmt->close();
+  
             $conn->close();
         }
         

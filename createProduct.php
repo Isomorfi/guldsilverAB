@@ -14,6 +14,7 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 if(isset($_GET['ProductID'])){
     $_SESSION['ProductID'] = $_GET['ProductID'];
     $prodid = $_SESSION['ProductID'];
+    
     $sql10 = "SELECT * FROM Products WHERE ProductID='$prodid'";
     $res10 = mysqli_query($conn, $sql10);
     $data10 = mysqli_fetch_assoc($res10);
@@ -75,6 +76,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                     echo '<script>alert("Produkt kan inte uppdateras just nu! Kontakta IT-avdelningen!")</script>';
                         	}
 			}
+                      
                 }
 		else {
 			echo '<script>alert("Fält kan inte lämnas tomma!")</script>';

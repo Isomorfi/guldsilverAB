@@ -78,13 +78,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$newquantity = $_POST['changegold'];
 		$prodid = $_POST['change'];
 
-
+                
 		$sql = "SELECT Stock FROM db19880310.Products WHERE ProductID='$prodid'";
 		
 		$res = mysqli_query($conn, $sql);
 		$data = mysqli_fetch_assoc($res);
 		$stock = $data['Stock'];
-
+                $conn->begin_transaction();
 		$sql1 = "SELECT Quantity FROM db19880310.OrderItems WHERE ProductID='$prodid' AND OrderID='$orderID'";
 		
 		$res1 = mysqli_query($conn, $sql1);
@@ -103,8 +103,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 			$sql = "UPDATE db19880310.Products SET Stock='$newStock' WHERE ProductID='$prodid'";
 			$conn->query($sql);
 
-        	$sql = "UPDATE db19880310.OrderItems SET Quantity='$newquantity' WHERE ProductID='$prodid' AND OrderID='$orderID'"; 
+                        $sql = "UPDATE db19880310.OrderItems SET Quantity='$newquantity' WHERE ProductID='$prodid' AND OrderID='$orderID'"; 
 			$res = mysqli_query($conn, $sql);
+                        $conn->commit();
 			header("Location: basket.php");	
 			die;
 		}

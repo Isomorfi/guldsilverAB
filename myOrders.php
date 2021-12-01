@@ -17,6 +17,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	if (isset($_POST['searchbtn'])) {
 		$searchinput = $_POST['searchinput'];
                 $searchtype = $_POST['searchtype'];
+               
              if($_SESSION['username'] !== "Admin") {   
                 
                 $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' AND Username='$username' AND $searchtype LIKE '$searchinput%' ORDER BY orderdate desc";
@@ -24,16 +25,18 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
              else {
                  $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' AND $searchtype LIKE '$searchinput%' ORDER BY orderdate desc";
              }
+             
         }
 }
 else {
-    
+
     if($_SESSION['username'] !== "Admin") {
         
         $sql = "SELECT * FROM db19880310.Orders WHERE Username='$username' AND Status='Ordered' ORDER BY orderdate desc";
     } else {
         $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' ORDER BY orderdate desc";
     }
+
         
    
 }

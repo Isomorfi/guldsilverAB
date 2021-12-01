@@ -44,7 +44,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     if(is_numeric($_SESSION['phone'])) {
                         if(isset($_POST['checkbox_name'])) {
 							$hash_pwd = sha1($password);
-
+                                                            
                             $sql = "INSERT INTO db19880310.Customers (Username, Firstname, Lastname, Password, SSN, Address, ZIP, City, Country, Email, Phone)
                 					VALUES ('$username', '$firstname', '$lastname', '$hash_pwd', '$ssn', '".$_SESSION['address']."', '".$_SESSION['zip']."', '".$_SESSION['city']."', '".$_SESSION['country']."', '".$_SESSION['email']."', '".$_SESSION['phone']."')";
 
@@ -53,7 +53,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 								// Skapan en plånbok för ny användare
 				$sql = "INSERT INTO Wallet (Username, Balance) VALUES ('$username', '0')";
 				$conn->query($sql);
-
+                                
 				header("Location: wallet.php");
 				die;
                             } 

@@ -48,14 +48,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	if (isset($_POST['status'])) {
         		$prodid = $_POST['status'];
 
-        		$conn->begin_transaction();
+        		
         		$sql = "SELECT Available From db19880310.Products WHERE ProductID='$prodid'";
         		$res = mysqli_query($conn, $sql);
         		$status = mysqli_fetch_assoc($res)['Available'] == 1 ? 0 : 1;
 
         		$sql = "UPDATE Products SET Available='$status' WHERE ProductID='$prodid'";
         		$conn->query($sql);
-        		$conn->commit();
+        		
                         $sql10 = "SELECT * FROM db19880310.Products";
 	
     	}

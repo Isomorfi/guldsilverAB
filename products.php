@@ -18,7 +18,7 @@ if(isset($_GET['ProductID'])){
 $username = $_SESSION['username'];
 $orderID = '';
 $quantity = '';
-//$productID = '1';
+
 $comment = '';
 $prodid = $_SESSION['ProductID'];
 
@@ -27,8 +27,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 	if (isset($_POST['update'])) {
 		$stockvalue = $_POST['stock'];
-
-		$sql = "UPDATE Products SET Stock='$stockvalue' WHERE ProductID='$prodid'";
+                
+		$sql = "UPDATE Products SET Stock=? WHERE ProductID=?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ii", $stockvalue, $prodid);
+                $stmt->execute();
+                $stmt->close();
 		if($conn->query($sql)){
 			$_SESSION['postdata'] = $_POST;
 			unset($_POST);
@@ -59,20 +63,20 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	if (isset($_POST['Answer'])) {
 		$commentid = $_POST['Answer'];
 		$answer = $_POST['Ans'];
-		//$sql = "INSERT INTO AdminComments VALUES ('$commentid', 'Admin', '$prodid', '$answer')";
-		//echo $answer;
-		$sql = "UPDATE Comments SET Answers='$answer' WHERE CommentID='$commentid'";
-		$sql1 = "UPDATE Comments SET Author='Admin' WHERE CommentID='$commentid'";
-		$sql2 = "UPDATE Comments SET AnswerDate=current_timestamp WHERE CommentID='$commentid'";
-		if($conn->query($sql) && $conn->query($sql1) && $conn->query($sql2)){
-			$_SESSION['postdata'] = $_POST;
-			unset($_POST);
-			header("Location: products.php");
-			die;
-		}
-		else {
-			echo '<script>alert("Du kan inte kommentera just nu.")</script>';
-		}
+
+		$sql = "UPDATE Comments SET Answers=?, Author=?, AnswerDate=current_timestamp WHERE CommentID=?";
+                $stmt = $conn->prepare($sql);
+                $author='Admin';
+                //$answerDate=current_timestamp;
+                $stmt->bind_param("ssi", $answer, $author, $commentid);
+                $stmt->execute();
+                $stmt->close();
+                
+                $_SESSION['postdata'] = $_POST;
+		unset($_POST);
+		header("Location: products.php");
+                die;
+		
 	}
 
 
@@ -98,8 +102,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$comment = $_POST['comment'];
 		
 
-		$sql = "INSERT INTO db19880310.Comments (Comment, Username, ProductID, Rating) VALUES ('$comment', '$username', '$prodid', $rating)";  
-		$conn->query($sql);
+		$sql = "INSERT INTO db19880310.Comments (Comment, Username, ProductID, Rating) VALUES (?, ?, ?, ?)";  
+		
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssid", $comment, $username, $prodid, $rating);
+                $stmt->execute();
+                $stmt->close();
 		$_SESSION['postdata'] = $_POST;
 		unset($_POST);
 		header("Location: products.php");
@@ -111,16 +119,22 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     	if (isset($_POST['buy'])) {
 		$quantity = $_POST['1'];
 		if($quantity > 0 && $_SESSION['Stock'] >= $quantity) {
-		
-			$newStock = $_SESSION['Stock'] - $quantity;
-			
-			$sql = "UPDATE db19880310.Products SET Stock='$newStock' WHERE ProductID='$prodid'";
-			$conn->query($sql);
-			
-			$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
-			$res = mysqli_query($conn, $sql);
-			$data = mysqli_fetch_assoc($res);
-	
+                    $conn->begin_transaction();
+                        $stmt = $conn->prepare("UPDATE db19880310.Products SET Stock=? WHERE ProductID=?");
+                        $stmt->bind_param("ii", $newStock, $prodid);
+                        $stmt->execute();
+                        $stmt->close();
+			$conn->commit();
+                        
+                        $basket = 'Basket';
+                        $sql = "SELECT OrderID FROM db19880310.Orders WHERE Username=? AND Status=?"; // SQL with parameters
+                        $stmt = $conn->prepare($sql); 
+                        $stmt->bind_param("ss", $username, $basket);
+                        $stmt->execute();
+                        $result = $stmt->get_result(); // get the mysqli result
+                        $stmt->close();
+                        $data = $result->fetch_assoc(); // fetch data  
+
 			if(!isset($data['OrderID'])) {
 				$_SESSION['status'] = 'Ordered';
 			}
@@ -134,35 +148,54 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 				$_SESSION['status'] = 'Basket';
 		
 				$sql = "INSERT INTO db19880310.Orders (Username, Status)
-				VALUES ('$username', '".$_SESSION['status']."')";
-				$conn->query($sql);
+				VALUES (?, ?)";
 
-				$sql = "SELECT OrderID FROM db19880310.Orders WHERE Username='$username' AND Status='Basket'";
-				
-				$res = mysqli_query($conn, $sql);
-				$data = mysqli_fetch_assoc($res);
+                                $stmt = $conn->prepare($sql);
+                                $stmt->bind_param("ss", $username, $_SESSION['status']);
+                                $stmt->execute();
+                                $stmt->close();
+                                
+                                $sql = "SELECT OrderID FROM db19880310.Orders WHERE Username=? AND Status=?";
+                                $stmt = $conn->prepare($sql); 
+                                $stmt->bind_param("ss", $username, $basket);
+                                $stmt->execute();
+                                $result = $stmt->get_result(); // get the mysqli result
+                                $stmt->close();
+                                $data = $result->fetch_assoc(); // fetch data 
 				$orderID = $data['OrderID'];
 			
 			} 
 			
-			$sql = "SELECT * FROM OrderItems WHERE ProductID='$prodid' AND OrderID='$orderID'";
-			$res = mysqli_query($conn, $sql);
-			$data = mysqli_fetch_assoc($res);
+			$sql = "SELECT * FROM OrderItems WHERE ProductID=? AND OrderID=?";
+			$stmt = $conn->prepare($sql); 
+                                $stmt->bind_param("ii", $prodid, $orderID);
+                                $stmt->execute();
+                                $result = $stmt->get_result(); // get the mysqli result
+                                $stmt->close();
+                                $data = $result->fetch_assoc(); // fetch data
 			if(!isset($data['OrderID'])) {
+                                $conn->begin_transaction();
 				$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
-				VALUES ('$orderID', '$prodid', '$quantity')";
-				if($conn->query($sql)) {
-					
-				}
+				VALUES (?, ?, ?)";
+                                $stmt = $conn->prepare($sql);
+                                $stmt->bind_param("iii", $orderID, $prodid, $quantity);
+                                $stmt->execute();
+                                $stmt->close();
+                                $conn->commit();
+				
 			}
 			else {
+                            $conn->begin_transaction();
 				$insquan = $data['Quantity'];
 				$quantity = $quantity + $insquan;
-				$sql = "Update db19880310.OrderItems SET Quantity='$quantity' WHERE OrderID='$orderID' AND ProductID='$prodid'";
-				if($conn->query($sql)) {
-					
-				}
+				$sql = "Update db19880310.OrderItems SET Quantity=? WHERE OrderID=? AND ProductID=?";
+				$stmt = $conn->prepare($sql);
+                                $stmt->bind_param("iii", $quantity, $orderID, $prodid);
+                                $stmt->execute();
+                                $stmt->close();
+                                $conn->commit();
 			}
+                        
 			$_SESSION['postdata'] = $_POST;
                         unset($_POST);
                         header("Location: basket.php");

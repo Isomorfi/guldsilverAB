@@ -159,6 +159,7 @@ $data3 = mysqli_fetch_assoc($res3);
     echo "<br>";
     $tot = $data3['TotalCost'] + $data3['ShippingCost'];
     echo "<p style=\"text-align:center;\">" . "Total kostnad: " . $tot . " kr." . "</p>";
+    
    ?>
 </fieldset></center>
 <br>

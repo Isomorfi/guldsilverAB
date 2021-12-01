@@ -15,7 +15,7 @@ include("db_connection.php");
 if($_SERVER['REQUEST_METHOD'] == "POST") {
 	$username = $_POST['username'];
 	$email = $_POST['email'];
-
+        
 	$sql = "SELECT Password, Email, Username FROM db19880310.Customers WHERE Username='$username' AND Email='$email'";
 	$res = mysqli_query($conn, $sql);
 	$data = mysqli_fetch_assoc($res);
