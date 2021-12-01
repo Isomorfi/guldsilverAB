@@ -34,8 +34,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
 	if (isset($_POST['searchP'])) {
-		$search = $_POST['search'];
-                $sql10 = "SELECT * FROM db19880310.Products WHERE ProductName LIKE '$search%'";
+            
+		$search = $_POST['search'] . '%';
+                $sql10 = "SELECT * FROM db19880310.Products WHERE ProductName LIKE ?";
+                $stmt = $conn->prepare($sql10); 
+                $stmt->bind_param("s", $search);
 		
 		
 		
@@ -60,6 +63,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 }
 else {
     $sql10 = "SELECT * FROM db19880310.Products";
+    $stmt = $conn->prepare($sql10);
+    
     
 }
 
@@ -129,10 +134,13 @@ if($_SESSION['username'] === "Admin") {?>
 
  <center>
 <?php
+
+
 $link = 'products.php';
 $counter = 0;
-$res = mysqli_query($conn, $sql10);
-while($data = mysqli_fetch_assoc($res)){
+$stmt->execute();
+$result = $stmt->get_result();
+while ($data = $result->fetch_assoc()) {
     $prodid = $data['ProductID'];
     $src = $data['PicSrc'];
     $prodname = $data['ProductName'];
@@ -200,6 +208,8 @@ while($data = mysqli_fetch_assoc($res)){
            
 
            }
+$stmt->close();
+$conn->close();
 ?>
 
 

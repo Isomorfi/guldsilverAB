@@ -97,18 +97,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	
 		$comment = $_POST['comment'];
 		
-                if(strlen($comment) > 0) {
-                
-                    $sql = "INSERT INTO db19880310.Comments (Comment, Username, ProductID, Rating) VALUES ('$comment', '$username', '$prodid', $rating)";  
-                    $conn->query($sql);
-                    $_SESSION['postdata'] = $_POST;
-                    unset($_POST);
-                    //header("Location: products.php");
-                    //die;
-                }
-                else {
-                    echo '<script>alert("Du måste även lämna en kommentar.")</script>';
-                }
+
+		$sql = "INSERT INTO db19880310.Comments (Comment, Username, ProductID, Rating) VALUES ('$comment', '$username', '$prodid', $rating)";  
+		$conn->query($sql);
+		$_SESSION['postdata'] = $_POST;
+		unset($_POST);
+		header("Location: products.php");
+		die;
 		
 	}
 
@@ -170,9 +165,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 			}
 			$_SESSION['postdata'] = $_POST;
                         unset($_POST);
-                        //header("Location: basket.php");
-                        //die;
-                        echo '<script>alert("Produkt tillagd i varukorg.")</script>';
+                        header("Location: basket.php");
+                        die;
 		}
                 else {
                     echo '<script>alert("Det finns inte nog många enheter av denna produkt eller så har du inte nog mycket pengar.")</script>';
@@ -189,53 +183,54 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-body {background-color: powderblue;}
-h1   {color: #020764;}
-p    {color: #020764;}
-h4   {color: #020764;}
-</style>
+<link rel="stylesheet" href="style.css">
+    <title>     
+        Sverige-mineralen AB
+    </title>  
 </head>
 <body>
 
-<h1>Guld och silver AB - Produkter</h1>
+<header>
+        <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
+        <div class="topnav">
+
+            <a href="store.php">
+                <h1>Sverige-mineralen AB</h1>
+            </a>
+
+            <div id="topnav-right">
+
+                <?php
+                if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
+
+                    <fieldset class="fieldset-auto-width">
+                    <?php
+                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                    ?>
+                    </fieldset>
+                <?php
+                }
+                ?>
+                <a href="store.php">
+                    <h2>Produkter</h2>
+                </a>
+                <a href="mypages.php">
+                    <h2>Mina sidor</h2>
+                </a>
+                <a href="home.php">
+                    <h2>Logga ut</h2>
+                </a>
+                
+				<a href="basket.php"><input type="image" src="https://purepng.com/public/uploads/large/purepng.com-shopping-cartshoppingcarttrolleycarriagebuggysupermarkets-1421526532323sy0um.png" name="submit" width="60" height="60"/>
+                </a>
+            </div>
+        </div>
+    </header>
+
+<br><br>
+
 
 <?php
-
-if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
-<style type="text/css">
-    .fieldset-auto-width {
-         display: inline-block;
-	text-align:left;
-    }
-</style>
-
-    <fieldset class="fieldset-auto-width">
-        <?php
-    
-	echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
-?>
-    </fieldset>
-<?php
-}
-
-?>
-<br>
-<br>
-
-<a href="home.php"><button type="submit" value="Submit">Logga ut</button></a>
-
-<a href="mypages.php"><button type="submit" value="Submit">Mina sidor</button></a>
-
-<a href="store.php"><button type="submit" value="Submit">Produkter</button></a><br>
-
-<a href="basket.php"><input type="image" src="https://purepng.com/public/uploads/large/purepng.com-shopping-cartshoppingcarttrolleycarriagebuggysupermarkets-1421526532323sy0um.png" name="submit" width="60" height="60"/></a>
-
-
-
-<?php
-
-
 
 $sql = "SELECT * FROM db19880310.Products WHERE ProductID='$prodid'";
 $conn->query($sql);
@@ -348,14 +343,9 @@ echo "<br>";
 
 while ($row = mysqli_fetch_assoc($result)) {
 ?>
-<center><style type="text/css">
-    .fieldset-auto-width {
-         display: inline-block;
-	text-align:left;
-    }
-</style>
+<center>
 
-    <fieldset class="fieldset-auto-width">
+    <fieldset class="fieldset-auto-width2">
 
 <div style="width:400px; display: block; margin-left: auto; margin-right: auto; border: 15px black;">
     <p>

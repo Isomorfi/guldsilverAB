@@ -7,15 +7,25 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	$username = $_POST['username'];
 	$password = $_POST['password'];
 
-
-	$sql = "SELECT Password FROM db19880310.Customers WHERE Username='$username'";
-	$res = mysqli_query($conn, $sql);
-	$data = mysqli_fetch_assoc($res);
-        
-        if(!isset($data)) {
+        if($username == null) {
             echo '<script>alert("Felaktigt användarnamn.")</script>';
         }
+        if($password == null) {
+            echo '<script>alert("Felaktigt lösenord.")</script>';
+        }
+        
+        
+        
 	else {
+            
+            // prepare and bind
+            $sql = "SELECT Password FROM db19880310.Customers WHERE Username=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result(); // get the mysqli result
+            $data = $result->fetch_assoc(); // fetch data  
+            
             $hash_pwd = sha1($password);
 
             if($hash_pwd === $data['Password']) {
@@ -26,7 +36,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
             } else {
                     echo '<script>alert("Felaktigt lösenord.")</script>';
             }
+            $stmt->close();
+            $conn->close();
         }
+        
 	
 }
 

@@ -52,16 +52,16 @@ if(isset($_GET['OrderID'])){
                 <?php
                 }
                 ?>
- 
+                <a href="store.php">
+                    <h2>Produkter</h2>
+                </a>
                 <a href="mypages.php">
                     <h2>Mina sidor</h2>
                 </a>
                 <a href="home.php">
                     <h2>Logga ut</h2>
                 </a>
-                <a href="store.php">
-                    <h2>Produkter</h2>
-                </a>
+                
             </div>
         </div>
     </header>

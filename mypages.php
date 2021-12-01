@@ -47,13 +47,13 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
                 <?php
                 }
                 ?>
-                
-                <a href="home.php">
-                    <h2>Logga ut</h2>
-                </a>
                 <a href="store.php">
                     <h2>Produkter</h2>
                 </a>
+                <a href="home.php">
+                    <h2>Logga ut</h2>
+                </a>
+                
             </div>
         </div>
     </header>

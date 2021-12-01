@@ -147,18 +147,28 @@ $Quan = $Quan + $data['Quantity'];
 <div style="width:650px; margin:0 auto;">
 
     <div style="width:300px; float:left;">
-        <p><label for="fname"><br><br>Våra huvudprodukter, guld och silver, har en renhet på 99,9% och utvinns i våra egna gruvor på Tallvik i Överkalix i norr respektive Kolsva i söder. Att produkterna utvinns i Sverige och har en så pass hög halt av guld och silver i kombination med vårat låga pris, som är 50% under marknadsvärde, gör våra produkter helt unika. <br><br> För att ta del av våra erbjudanden krävs det att du registrerar ett konto hos oss.</label></p>
+        <p><label for="fname">I två orter i Sverige har det visat sig finnas perfekta förhållanden för mineralbildning. Dessa orter är Överkalix i norrbottens län, samt Kolsva i västmanlands län.
+                Mineralerna i fråga är guld respektive silver. Men även i våra grannländer Norge och Finland finns det gott om mineraler. Detta är något som vi på Sverige-mineralen har uppmärksammat och dragit nytta av genom gedigna kunskaper och erfarenheter inom geologi, mineralteknik och gruvdrift.
+                Kärnan i vår verksamhet är just brytning och försäljning av våra svenska mineraler, men tack vare våran unika energisparande förädlingsprocess så importerar vi även mineraler från våra nordiska grannländer för att kunna erbjuda fler produkter, som dessutom, 
+                med nordiska mått, är närproducerade och miljöcertifierade. Dessutom till ett pris som ligger minst 50% under marknadsvärde. Denna kombination gör våra produkter helt unika.
+                
+                
+                
+                
+               
     </div>
 
     <div style="width:300px; float:right;">
+        <br><br>
         <p><img src="https://packbud.com/sites/packbud/files/field/gmapimagei154428739gmapimage106949.png" alt="Logo" width="350" height="300"></p>
 
     </div>
 
 
 </div>
-<div style="clear: both;"></div>
-
+        <center>
+<div style="clear: both;"> <br><br> För att ta del av våra erbjudanden krävs det att du registrerar ett konto hos oss.</label></p></div>
+        </center>
 
 
 
