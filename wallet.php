@@ -112,6 +112,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 			 <form name="form" method="POST">
 
 				<p style="text-align:center;">
+                                    <label>För din säkerhet sparar vi inga kortuppgifter.</label><br><br>
 					<label for="grade">Typ av kort:</label><br><br>
 						<select name="grade" id="grade">
 						<option value="1">Visa</option>

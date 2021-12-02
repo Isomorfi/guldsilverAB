@@ -31,9 +31,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$sql = "UPDATE Products SET Stock=? WHERE ProductID=?";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ii", $stockvalue, $prodid);
-                $stmt->execute();
-                $stmt->close();
-		if($conn->query($sql)){
+                $ress = $stmt->execute();
+                
+		if($ress){
 			$_SESSION['postdata'] = $_POST;
 			unset($_POST);
 			echo '<script>alert("Fält kan inte lämnas tomma!")</script>';
@@ -43,6 +43,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		else {
 			echo '<script>alert("Något gick fel vid påfyllning av saldo. Kontakta IT-avdelningen.")</script>';
 		}
+                $stmt->close();
 	}
 
 
@@ -118,13 +119,15 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         
     	if (isset($_POST['buy'])) {
 		$quantity = $_POST['1'];
+                
 		if($quantity > 0 && $_SESSION['Stock'] >= $quantity) {
-                    $conn->begin_transaction();
+                    //$conn->begin_transaction();
+                    $newStock = $_SESSION['Stock'] - $quantity;
                         $stmt = $conn->prepare("UPDATE db19880310.Products SET Stock=? WHERE ProductID=?");
                         $stmt->bind_param("ii", $newStock, $prodid);
                         $stmt->execute();
                         $stmt->close();
-			$conn->commit();
+			//$conn->commit();
                         
                         $basket = 'Basket';
                         $sql = "SELECT OrderID FROM db19880310.Orders WHERE Username=? AND Status=?"; // SQL with parameters
@@ -174,18 +177,18 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                 $stmt->close();
                                 $data = $result->fetch_assoc(); // fetch data
 			if(!isset($data['OrderID'])) {
-                                $conn->begin_transaction();
+                                //$conn->begin_transaction();
 				$sql = "INSERT INTO db19880310.OrderItems (OrderID, ProductID, Quantity)
 				VALUES (?, ?, ?)";
                                 $stmt = $conn->prepare($sql);
                                 $stmt->bind_param("iii", $orderID, $prodid, $quantity);
                                 $stmt->execute();
                                 $stmt->close();
-                                $conn->commit();
+                                //$conn->commit();
 				
 			}
 			else {
-                            $conn->begin_transaction();
+                            //$conn->begin_transaction();
 				$insquan = $data['Quantity'];
 				$quantity = $quantity + $insquan;
 				$sql = "Update db19880310.OrderItems SET Quantity=? WHERE OrderID=? AND ProductID=?";
@@ -193,7 +196,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                 $stmt->bind_param("iii", $quantity, $orderID, $prodid);
                                 $stmt->execute();
                                 $stmt->close();
-                                $conn->commit();
+                                //$conn->commit();
 			}
                         
 			$_SESSION['postdata'] = $_POST;
@@ -238,7 +241,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
                     <fieldset class="fieldset-auto-width">
                     <?php
-                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr" . "</p>";
                     ?>
                     </fieldset>
                 <?php
@@ -260,7 +263,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
     </header>
 
-<br><br>
+<br>
+<br>
 
 
 <?php
@@ -296,7 +300,7 @@ while($ratingdata = mysqli_fetch_assoc($resu)) {
 if($count > 0){
 $avgrat = $avgrat/$count;
 
-echo "<h4 style='text-align:center;'>" . "Betyg: " . number_format($avgrat, 1) . " av 5. Antal omdömen: " . $count . "." . "</h4>"; 
+echo "<h4 style='text-align:center;'>" . "Betyg: " . number_format($avgrat, 1) . " av 5.0" . "<br><br>" . "Antal omdömen: " . $count . "</h4>"; 
 } else {
 	echo "<h4 style='text-align:center;'>" . "Det finns inga betyg för den här produkten." . "</h4>";
 }
@@ -306,7 +310,7 @@ echo "<h4 style='text-align:center;'>" . "Betyg: " . number_format($avgrat, 1) .
 
 <form name="form" method="POST">
 <div style="width:300px; display: block; margin-left: auto; margin-right: auto;">
-<p style="text-align:center;"><label for="fname"><?php echo $desc?> <br><br><p style="text-decoration: underline; text-align:center;">Antal i lager: <?php echo $_SESSION['Stock'], $unit . "."; ?><br><br>Pris: <?php echo $pricegold?> kr/<?php echo $unit?>.</label></p></p></div>
+<p style="text-align:center;"><label for="fname"><?php echo $desc?> <br><br><p style="text-decoration: underline; text-align:center;">Antal i lager: <?php echo $_SESSION['Stock'], " " . $unit; ?><br><br>Pris: <?php echo number_format($pricegold, 2, '.', ',')?> kr/<?php echo $unit?></label></p></p></div>
 
 <?php
 if($_SESSION['username'] === "Admin") {?>

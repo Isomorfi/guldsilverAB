@@ -41,7 +41,7 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 
                     <fieldset class="fieldset-auto-width">
                     <?php
-                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr." . "</p>";
                     ?>
                     </fieldset>
                 <?php
@@ -78,6 +78,6 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 </center>
 <center>
 <p>
-&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
+&copy; <?php echo date ('Y') . " Sverige-mineralen AB. All rights reserved."; ?></p></center>
 </body>
 </html>

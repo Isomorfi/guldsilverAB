@@ -42,13 +42,15 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     if(isset($_POST['ship'])) {
                         $shippingcost = $_POST['shipcost'];
                         $balance = $balance - $total - $shippingcost;
-                        $sql = "UPDATE db19880310.Orders SET Status='Ordered', ShippingCost='$shippingcost', Delivery='Shipping', orderDate=CURRENT_TIMESTAMP, TotalCost='$total' WHERE Username='$username' AND OrderID='$orderID'"; 
+                        $inclship = $total + $shippingcost;
+                        $sql = "UPDATE db19880310.Orders SET Status='Ordered', CostInclShip='$inclship', ShippingCost='$shippingcost', Delivery='Shipping', orderDate=CURRENT_TIMESTAMP, TotalCost='$total' WHERE Username='$username' AND OrderID='$orderID'"; 
                         $conn->query($sql);
                     }
                     else {
                         $shippingcost = 0;
                         $balance = $balance - $total;
-                        $sql = "UPDATE db19880310.Orders SET Status='Ordered', ShippingCost='$shippingcost', Delivery='Pick up', orderDate=CURRENT_TIMESTAMP, TotalCost='$total' WHERE Username='$username' AND OrderID='$orderID'"; 
+                        $inclship = $total + $shippingcost;
+                        $sql = "UPDATE db19880310.Orders SET Status='Ordered', CostInclShip='$inclship', ShippingCost='$shippingcost', Delivery='Pick up', orderDate=CURRENT_TIMESTAMP, TotalCost='$total' WHERE Username='$username' AND OrderID='$orderID'"; 
                         $conn->query($sql);
                     }
                 
@@ -78,13 +80,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$newquantity = $_POST['changegold'];
 		$prodid = $_POST['change'];
 
-                
+                $conn->begin_transaction();
 		$sql = "SELECT Stock FROM db19880310.Products WHERE ProductID='$prodid'";
 		
 		$res = mysqli_query($conn, $sql);
 		$data = mysqli_fetch_assoc($res);
 		$stock = $data['Stock'];
-                $conn->begin_transaction();
+                
 		$sql1 = "SELECT Quantity FROM db19880310.OrderItems WHERE ProductID='$prodid' AND OrderID='$orderID'";
 		
 		$res1 = mysqli_query($conn, $sql1);
@@ -133,7 +135,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         <div class="topnav">
 
             <a href="store.php">
-                <h1>Sverige-mineralen AB - Kundvagn</h1>
+                <h1>Sverige-mineralen AB</h1>
             </a>
 
             <div id="topnav-right">
@@ -143,7 +145,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
                     <fieldset class="fieldset-auto-width">
                     <?php
-                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr." . "</p>";
                     ?>
                     </fieldset>
                 <?php
@@ -163,9 +165,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
     </header>
 
-<br><br>
+<br>
 
-
+<center><br>
+    <h1>Kundvagn</h1></center><br>
 <?php
 
 $sql = "SELECT * FROM Orders
@@ -193,16 +196,18 @@ if($res) {
         $costupdate = "UPDATE OrderItems SET TotalCost='$totprice' WHERE OrderID='$orderID' AND ProductID='$prodid'";
         $conn->query($costupdate);
 
-    ?>
+        ?>
     <fieldset>
-        <center>
-        <div style="width:500px;">
-        <div class="a"><p style="text-align:center;"><?php echo "<a href=\"$link?ProductID=$prodid\">";?><input type="image" 
+        
+        <center><div style="width:700px;">
+            <div style="width:300px; float:left;">
+                <p style="text-align:center;"><?php echo "<a href=\"$link?ProductID=$prodid\">";?><input type="image" 
 	        src="<?php echo $src ?>" 
-	        name="submit" width="200" height="150"/></a></p>
-        </div></center>
-    <div style="width:700px; float:right;"><p><?php echo "<a href=\"$link?ProductID=$prodid\">";?><?php echo $prodname?></a></p><p style="text-decoration: underline;"><label>Produkter i varukorgen: <?php echo $quantity . " " . $unit . " " . $prodname . "."?></label></p>
-    <p style="text-decoration: underline;"><label>Kostnad: <?php echo $quantity . " " . $unit . " á " . $price . " kr/" . $unit . ": " . $totprice . " kr."?></label></p>
+	        name="submit" width="200" height="150"/></p>
+            </div></center>
+            <div style="width:400px; float:left;">
+                <p><?php echo "<a href=\"$link?ProductID=$prodid\">";?><?php echo $prodname?></a></p><p style="text-decoration: underline;"><label>Produkter i varukorgen: <?php echo $quantity . " " . $unit . " " . $prodname?></label></p>
+    <p style="text-decoration: underline;"><label>Kostnad: <?php echo $quantity . " " . $unit . " á " . number_format($price, 2, '.', ',') . " kr/" . $unit . ": " . number_format($totprice, 2, '.', ',') . " kr"?></label></p>
 
     <form name="form" method="POST">
         <p>
@@ -210,9 +215,13 @@ if($res) {
 	        <input type="text" id="changegold" name="changegold">
 	        <input type="hidden" name="order" value="<?php echo $orderID;?>">
 	        <button type="submit" value="<?php echo $data['ProductID']?>" name="change">Ändra varukorg</button></p>
-    </form></div>
-    </div>
-    <div style="clear: both;"></div>
+    </form>
+            </div>
+        </div>
+        <div style="clear: both;"></div>
+
+        
+ 
     </fieldset>
 
 <?php
@@ -225,7 +234,7 @@ if($res) {
 
     <?php
     $shippingcost = ceil($weight/1000) * 49; 
-    echo "<p style=\"text-align:center;\">" . $shippingcost . " kr." . "</p>"; 
+    echo "<p style=\"text-align:center;\">" . number_format($shippingcost, 2, '.', ',') . " kr" . "</p>"; 
     ?>
 </fieldset>
 
@@ -243,11 +252,11 @@ if($total != 0) {
             
             <p style="text-align:center;"><label>Välj ett alternativ:</label></p><br>
         <p style="text-align:center;"><input type="checkbox" name="pickup" value="Hämta på lager">Hämta på lager i Kolsva.</input></p>
-        <?php echo "<p style=\"text-align:center;\">" . "Totalt: " . $total . " kr" . "</p>"; ?>
-        <br><p style="text-align:center;"><input type="checkbox" name="ship" value="Skickas">Frakta med PostNord.</input></p>
+        <?php echo "<p style=\"text-align:center;\">" . "Totalt: " . number_format($total, 2, '.', ',') . " kr" . "</p>"; ?>
+        <br><p style="text-align:center;"><input type="checkbox" name="ship" value="Skickas">Leverera med PostNord.</input></p>
 	<?php
             $totwithship = $total + $shippingcost;
-            echo "<p style=\"text-align:center;\">" . "Totalt: " . $totwithship . " kr." . "</p>";
+            echo "<p style=\"text-align:center;\">" . "Totalt: " . number_format($totwithship, 2, '.', ',') . " kr" . "</p>";
             ?>
         <input type="hidden" name="tot" value="<?php echo $total;?>">
         <input type="hidden" name="shipcost" value="<?php echo $shippingcost;?>">

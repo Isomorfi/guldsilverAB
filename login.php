@@ -7,14 +7,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	$username = $_POST['username'];
 	$password = $_POST['password'];
 
-        if($username == null) {
-            echo '<script>alert("Felaktigt användarnamn.")</script>';
-        }
+        
         if($password == null) {
             echo '<script>alert("Felaktigt lösenord.")</script>';
         }
         
-        
+        if($username == null) {
+            echo '<script>alert("Felaktigt användarnamn.")</script>';
+        }
         
 	else {
            

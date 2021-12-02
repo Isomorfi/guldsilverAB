@@ -36,7 +36,7 @@ if(isset($_GET['OrderID'])){
         <div class="topnav">
 
             <a href="store.php">
-                <h1>Sverige-mineralen AB - Order</h1>
+                <h1>Sverige-mineralen AB</h1>
             </a>
 
             <div id="topnav-right">
@@ -46,7 +46,7 @@ if(isset($_GET['OrderID'])){
 
                     <fieldset class="fieldset-auto-width">
                     <?php
-                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr" . "</p>";
                     ?>
                     </fieldset>
                 <?php
@@ -66,7 +66,9 @@ if(isset($_GET['OrderID'])){
         </div>
     </header>
 
-<br><br>
+<br>
+<center><br>
+    <h1>Order</h1></center><br>
 
 
 <?php
@@ -137,7 +139,7 @@ while ($data = mysqli_fetch_assoc($res)) {
   	    name="submit" width="200" height="150"/></p>
     </div>
 
-    <div style="width:350px; float:left;"><p><label id="silver"><br>99,9% rent <?php echo $data3['ProductName']?>. <br><br>Antal <?php echo $unit;?>: <?php echo $data['Quantity']?>. <br><br>Kostnad: <?php echo $data['TotalCost']?> kr.</label></p>
+    <div style="width:350px; float:left;"><p><label id="silver"><br>99,9% rent <?php echo $data3['ProductName']?>. <br><br>Antal <?php echo $unit;?>: <?php echo $data['Quantity']?> <br><br>Kostnad: <?php echo number_format($data['TotalCost'], 2, '.', ',')?> kr</label></p>
 
     </div>
     </div>
@@ -155,10 +157,10 @@ $data3 = mysqli_fetch_assoc($res3);
 
 <p style="text-align:center;">Orderkostnad:</p>
 
-    <?php echo "<p style=\"text-align:center;\">" . $data3['TotalCost'] . " kr + " . $data3['ShippingCost'] . " kr frakt." . "</p>";
+    <?php echo "<p style=\"text-align:center;\">" . number_format($data3['TotalCost'], 2, '.', ',') . " kr + " . number_format($data3['ShippingCost'], 2, '.', ',') . " kr frakt" . "</p>";
     echo "<br>";
     $tot = $data3['TotalCost'] + $data3['ShippingCost'];
-    echo "<p style=\"text-align:center;\">" . "Total kostnad: " . $tot . " kr." . "</p>";
+    echo "<p style=\"text-align:center;\">" . "Total kostnad: " . number_format($tot, 2, '.', ',') . " kr" . "</p>";
     
    ?>
 </fieldset></center>
@@ -169,7 +171,7 @@ $data3 = mysqli_fetch_assoc($res3);
 </fieldset>
 <center>
 <p>
-&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?>
+&copy; <?php echo date ('Y') . " Sverige-mineralen AB. All rights reserved."; ?>
 </p>
 </center>
 </body>
