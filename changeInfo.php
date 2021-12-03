@@ -9,7 +9,10 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 	die;
 	
 }
-
+if(isset($_SESSION['message']) && $_SESSION['message'] == true) {
+    echo '<script>alert("Uppgifter uppdaterat.")</script>';
+    $_SESSION['message'] = false;
+}
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
 
@@ -43,37 +46,41 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 if(is_numeric($ssn)) {
                     if(is_numeric($zip)) {
                         if(is_numeric($phone)) {
-                            
-                            $sql = "UPDATE Customers SET Firstname='$firstname',
-                                                        Lastname='$lastname',
-                                                        Address='$address',
-                                                        ZIP='$zip',
-                                                        City='$city',
-                                                        Country='$country',
-                                                        Email='$email',
-                                                        Phone='$phone' 
-                                                        WHERE Username='$username'";
+                            $sql = "UPDATE Customers    
+                                    SET    Firstname=?, Lastname=?, Address=?, ZIP=?, City=?, Country=?, Email=?, Phone=? 
+                                    WHERE  Username=?";
 
-                            if ($conn->query($sql) === TRUE) {
-                                echo '<script>alert("Kontouppgifter uppdaterade!")</script>';
-                                header("Location: store.php");
-                                die;
-                            }
-                                    
-                        } else {
+                            $stmt = $conn->prepare($sql);
+                            $stmt->bind_param("sssssssss", $firstname, $lastname, $address, $zip, $city, $country, $email, $phone, $username);
+                            if($res = $stmt->execute()) {
+                                $_SESSION['message'] = true;
+                            }  
+
+                            $stmt->close();        
+                            header("Location: changeInfo.php");
+                            die;                  
+                        }
+                        else {
                             echo '<script>alert("Felaktigt angivet telefonnummer.")</script>';
-                        }                                
+                            $_SESSION['message'] = false;
+                        }  
+                        
+                                                  
                     } else {
                         echo '<script>alert("Felaktigt angivet postnummer.")</script>';
+                        $_SESSION['message'] = false;
                     }            
                 } else {
                     echo '<script>alert("Felaktigt angivet personnummer.")</script>';
+                    $_SESSION['message'] = false;
                 } 
             } else {
                 echo '<script>alert("Felaktigt lösenord.")</script>';
+                $_SESSION['message'] = false;
             }
         } else {
             echo '<script>alert("Fält kan ej lämnas tomma!")</script>';
+            $_SESSION['message'] = false;
         }
        
     }	
@@ -93,38 +100,38 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 <body>
 
 <header>
-        <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
-        <div class="topnav">
+    <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
+    <div class="topnav">
 
-            <a href="store.php">
-                <h1>Sverige-mineralen AB - Ändra konto</h1>
-            </a>
+        <a href="store.php">
+            <h1>Sverige-mineralen AB</h1>
+        </a>
 
-            <div id="topnav-right">
+        <div id="topnav-right">
 
+            <?php
+            if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
+
+                <fieldset class="fieldset-auto-width">
                 <?php
-                if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
-
-                    <fieldset class="fieldset-auto-width">
-                    <?php
-                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
-                    ?>
-                    </fieldset>
-                <?php
-                }
+                echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
                 ?>
+                </fieldset>
+            <?php
+            }
+            ?>
  
-                <a href="mypages.php">
-                    <h2>Mina sidor</h2>
-                </a>
-                <a href="home.php">
-                    <h2>Logga ut</h2>
-                </a>
-            </div>
+            <a href="mypages.php">
+                <h2>Mina sidor</h2>
+            </a>
+            <a href="home.php">
+                <h2>Logga ut</h2>
+            </a>
         </div>
-    </header>
+    </div>
+</header>
 
-<br><br>
+<br><center><h1>Ändra konto</h1></center><br>
 
 
 <?php
@@ -173,6 +180,6 @@ $pw = $data1['Password'];
 </fieldset>
 <center>
 <p>
-&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
+&copy; <?php echo date ('Y') . " Sverige-mineralen AB. All rights reserved."; ?></p></center>
 </body>
 </html>

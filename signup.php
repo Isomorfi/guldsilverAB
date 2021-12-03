@@ -35,31 +35,50 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
         
-	if(strlen($username) > 0 && strlen($firstname) > 0 && strlen($lastname) > 0 &&
-	strlen($password) > 0 && strlen($password2) > 0 && strlen($_SESSION['address']) > 0 && strlen($_SESSION['zip']) > 0 && strlen($_SESSION['city']) > 0 &&
-	strlen($_SESSION['country']) > 0 && strlen($_SESSION['email']) > 0 && strlen($_SESSION['phone']) > 0) {
+	if(strlen($username) > 0 && strlen($firstname) > 0 && strlen($lastname) > 0 && strlen($password) > 0 && 
+		strlen($password2) > 0 && strlen($_SESSION['address']) > 0 && strlen($_SESSION['zip']) > 0 && strlen($_SESSION['city']) > 0 
+		&& strlen($_SESSION['country']) > 0 && strlen($_SESSION['email']) > 0 && strlen($_SESSION['phone']) > 0) {
 		if($password === $password2) {
             if(is_numeric($ssn) && strlen($ssn) == 10) {
                 if(is_numeric($_SESSION['zip'])) {
                     if(is_numeric($_SESSION['phone'])) {
                         if(isset($_POST['checkbox_name'])) {
 							$hash_pwd = sha1($password);
-                                                            
-                            $sql = "INSERT INTO db19880310.Customers (Username, Firstname, Lastname, Password, SSN, Address, ZIP, City, Country, Email, Phone)
-                					VALUES ('$username', '$firstname', '$lastname', '$hash_pwd', '$ssn', '".$_SESSION['address']."', '".$_SESSION['zip']."', '".$_SESSION['city']."', '".$_SESSION['country']."', '".$_SESSION['email']."', '".$_SESSION['phone']."')";
+                                                
+							$sql = "INSERT INTO Customers (	Username, Firstname, Lastname, Password, SSN, 
+															Address, ZIP, City, Country, Email, Phone)
+									VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                            if ($conn->query($sql) === TRUE) {
-								
+							$stmt = $conn->prepare($sql);
+							$stmt->bind_param("sssssssssss", $username, $firstname, $lastname, 
+												$hash_pwd, $ssn, $_SESSION['address'], $_SESSION['zip'], 
+												$_SESSION['city'], $_SESSION['country'], $_SESSION['email'], 
+												$_SESSION['phone']);
+
+							if($res = $stmt->execute()) {
+
 								// Skapan en plånbok för ny användare
-				$sql = "INSERT INTO Wallet (Username, Balance) VALUES ('$username', '0')";
-				$conn->query($sql);
-                                
-				header("Location: wallet.php");
-				die;
-                            } 
+								$sql = "INSERT INTO Wallet (Username, Balance) VALUES (?, ?)";
+								$stmt = $conn->prepare($sql);
+								$balance = 0;
+								$stmt->bind_param("sd", $username, $balance);
+								$stmt->execute();
+								
+
+								$_SESSION['signedin'] = true;
+    							$_SESSION['username'] = $username;
+								$_SESSION['balance'] = $balance;
+
+								
+
+							}
+							
                             else {
-				echo "Användarnamnet är redan upptaget. Välj ett annat.";
+								echo "Användarnamnet är redan upptaget. Välj ett annat.";
                             }
+							$stmt->close();
+							header("Location: wallet.php");
+							die;
                         } 
 						else {
                             echo "Felaktigt angivet telefonnummer.";
@@ -98,26 +117,28 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 <body>
 <header>
 
-                <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
-                <div class="topnav">
+    <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
+    <div class="topnav">
 
-                   <a href="#">
-                       <h1>Sverige-mineralen AB</h1>
-                   </a>
+        <a href="home.php">
+            <h1>Sverige-mineralen AB</h1>
+        </a>
 
-                   <div id="topnav-right">
-                      <a href="home.php">
-                         <h2>Hem</h2>
-                      </a>
-                      <a href="login.php">
-                         <h2>Logga in</h2>
-                      </a>
+        <div id="topnav-right">
+            <a href="home.php">
+                <h2>Hem</h2>
+            </a>
+            <a href="login.php">
+                <h2>Logga in</h2>
+            </a>
                        
-                   </div>
-                </div>
+            </div>
+        </div>
 
-      </header>
-    <br><br><br><br><br><br>
+</header>
+
+<br>
+<center><h1>Skapa konto</h1></center><br>
 
 <fieldset>
 <form name="form" method="POST">
@@ -165,6 +186,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 </fieldset>
 <center>
 <p>
-&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
+&copy; <?php echo date ('Y') . " Sverige-mineralen AB. All rights reserved."; ?></p></center>
 </body>
 </html>

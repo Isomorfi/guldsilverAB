@@ -10,7 +10,10 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 	die;
 	
 }
-
+if(isset($_SESSION['message']) && $_SESSION['message'] == true) {
+    echo '<script>alert("Uppgifter uppdaterat.")</script>';
+    $_SESSION['message'] = false;
+}
  
 
 
@@ -21,17 +24,32 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	$newpassword2 = $_POST['newpassword2'];
 	
 
-	$sql = "SELECT Password FROM db19880310.Customers WHERE Username='$username'";
-	$res = mysqli_query($conn, $sql);
-	$data = mysqli_fetch_assoc($res);
-	
+	$sql = "SELECT Password FROM db19880310.Customers WHERE Username=?";
+
+        $stmt = $conn->prepare($sql); 
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result(); // get the mysqli result
+        $stmt->close();
+        $data = $result->fetch_assoc(); // fetch data 
+
 	$hash_pwd = sha1($oldpassword);
 
     	if($hash_pwd === $data['Password'] || $oldpassword == $data['Password']) {
 		if($newpassword === $newpassword2) {
+                                                
+
 			$hash_pwd = sha1($newpassword);
-			$sql = "UPDATE db19880310.Customers SET Password='$hash_pwd' WHERE Username='$username'";
-			$res = mysqli_query($conn, $sql);
+			$sql = "UPDATE db19880310.Customers SET Password=? WHERE Username=?";
+                        
+                        $stmt = $conn->prepare($sql);
+                        $stmt->bind_param("ss", $hash_pwd, $username);
+                        $stmt->execute();
+                        
+                        $_SESSION['message'] = true;
+                        
+			
+                        $stmt->close();
 		} else {
 			echo "Lösenord överensstämmer inte.";
 		}
@@ -63,7 +81,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         <div class="topnav">
 
             <a href="store.php">
-                <h1>Sverige-mineralen AB - Ändra lösenord</h1>
+                <h1>Sverige-mineralen AB</h1>
             </a>
 
             <div id="topnav-right">
@@ -73,7 +91,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
                     <fieldset class="fieldset-auto-width">
                     <?php
-                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr" . "</p>";
                     ?>
                     </fieldset>
                 <?php
@@ -93,7 +111,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
     </header>
 
-<br><br>
+<br>
+<center><h1>Ändra lösenord</h1></center><br>
 
 <fieldset>
 <form name="form" method="POST">
@@ -112,6 +131,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 </fieldset>
 <center>
 <p>
-&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
+&copy; <?php echo date ('Y') . " Sverige-mineralen AB. All rights reserved."; ?></p></center>
 </body>
 </html>

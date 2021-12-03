@@ -12,7 +12,7 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 	die;
 	
 }
-
+$ordered = "Ordered";
 $offset = 0;
 $username = $_SESSION['username'];
 if($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -31,9 +31,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         
         if($_SESSION['username'] !== "Admin") {
         
-        $sql = "SELECT * FROM db19880310.Orders WHERE Username='$username' AND Status='Ordered' ORDER BY orderdate desc LIMIT ".$offset.", 10";
+        $sql = "SELECT * FROM db19880310.Orders WHERE Username=? AND Status=? ORDER BY orderdate desc LIMIT ".$offset.", 10";
+        $stmt = $conn->prepare($sql); 
+        $stmt->bind_param("ss", $username, $ordered);
+        
     } else {
-        $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' ORDER BY orderdate desc LIMIT ".$offset.", 10";
+        $sql = "SELECT * FROM db19880310.Orders WHERE Status=? ORDER BY orderdate desc LIMIT ".$offset.", 10";
+        $stmt = $conn->prepare($sql); 
+        $stmt->bind_param("s", $ordered);
     }
 
 
@@ -41,17 +46,23 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
         
 	if (isset($_POST['searchbtn'])) {
-		$searchinput = $_POST['searchinput'];
+		$searchinput = $_POST['searchinput']  . '%';
                 $searchtype = $_POST['searchtype'];
                
 
                 
              if($_SESSION['username'] !== "Admin") {   
                 
-                $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' AND Username='$username' AND $searchtype LIKE '$searchinput%' ORDER BY orderdate desc LIMIT ".$offset.", 10";
+                $sql = "SELECT * FROM db19880310.Orders WHERE Status=? AND Username=? AND $searchtype LIKE ? ORDER BY orderdate desc LIMIT ".$offset.", 10";
+                $stmt = $conn->prepare($sql); 
+                $stmt->bind_param("sss", $ordered, $username, $searchinput);
+                
              }
              else {
-                 $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' AND $searchtype LIKE '$searchinput%' ORDER BY orderdate desc LIMIT ".$offset.", 10";
+                 $sql = "SELECT * FROM db19880310.Orders WHERE Status=? AND $searchtype LIKE ? ORDER BY orderdate desc LIMIT ".$offset.", 10";
+                 $stmt = $conn->prepare($sql); 
+                $stmt->bind_param("ss", $ordered, $searchinput);
+                 
              }
              
         }
@@ -60,9 +71,13 @@ else {
 
     if($_SESSION['username'] !== "Admin") {
         
-        $sql = "SELECT * FROM db19880310.Orders WHERE Username='$username' AND Status='Ordered' ORDER BY orderdate desc LIMIT ".$offset.", 10";
+        $sql = "SELECT * FROM db19880310.Orders WHERE Username=? AND Status=? ORDER BY orderdate desc LIMIT ".$offset.", 10";
+        $stmt = $conn->prepare($sql); 
+        $stmt->bind_param("ss", $username, $ordered);
     } else {
-        $sql = "SELECT * FROM db19880310.Orders WHERE Status='Ordered' ORDER BY orderdate desc LIMIT ".$offset.", 10";
+        $sql = "SELECT * FROM db19880310.Orders WHERE Status=? ORDER BY orderdate desc LIMIT ".$offset.", 10";
+        $stmt = $conn->prepare($sql); 
+        $stmt->bind_param("s", $ordered);
     }
     $_SESSION['value'] = 0;
 
@@ -133,11 +148,13 @@ else {
 </form>
 <center>
 <?php
-
+$stmt->execute();
+$result = $stmt->get_result(); // get the mysqli result
+$stmt->close();
 $countrow = 0;
 if($username === "Admin") {
 
-$result = mysqli_query($conn, $sql); // First parameter is just return of "mysqli_connect()" function
+
 $link = 'checkout.php';
 echo "<br>";
 
@@ -163,7 +180,9 @@ if (!$result){
    die();
 }
 
-while ($row = mysqli_fetch_assoc($result)) {
+
+
+while ($row = $result->fetch_assoc()) {
     $countrow++;
     $order = $row['OrderID'];
     echo '<tr><td style="text-align: center; vertical-align: middle;">';
@@ -191,7 +210,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 
 if($_SESSION['username'] !== "Admin") {
-$result = mysqli_query($conn, $sql); // First parameter is just return of "mysqli_connect()" function
+
 $link = 'checkout.php';
 echo "<br>";
 
@@ -214,7 +233,7 @@ echo '<tr><td style="text-align: center; vertical-align: middle;">';
     echo "<p>" . "Total kostnad" . "</p>";
     echo '</td></tr>';
 if($result) {
-while ($row = mysqli_fetch_assoc($result)) {
+while ($row = $result->fetch_assoc()) {
     $countrow++;
     $order = $row['OrderID'];
     echo '<tr><td style="text-align: center; vertical-align: middle;">';

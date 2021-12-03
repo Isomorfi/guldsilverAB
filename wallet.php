@@ -60,7 +60,7 @@ $balance = $data['Balance'];
         <div class="topnav">
 
             <a href="store.php">
-                <h1>Sverige-mineralen AB - Plånbok</h1>
+                <h1>Sverige-mineralen AB</h1>
             </a>
 
             <div id="topnav-right">
@@ -70,7 +70,7 @@ $balance = $data['Balance'];
 
                     <fieldset class="fieldset-auto-width">
                     <?php
-                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr" . "</p>";
                     ?>
                     </fieldset>
                 <?php
@@ -90,11 +90,11 @@ $balance = $data['Balance'];
         </div>
     </header>
 
-<br><br>
+<br>
 
-
+<center><h1>Plånbok</h1></center><br>
 <fieldset>
-	<p style="text-align:center;"><label for="sum"><?php echo "Summa: $balance kr" ?> </label></p>
+	<p style="text-align:center;"><label for="sum"><?php echo "Summa: " . number_format($balance, 2, '.', ',') . " kr" ?> </label></p>
 
 	<form name="insert" method="POST">
 		<p style="text-align:center;"><button type="submit" value="Submit" name=insert>Sätt in pengar</button></p>
@@ -164,9 +164,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 if(isset($_POST['checkbox_name'])) {
                     $balance = $balance - $sum;
 
-                    $sql = "UPDATE Wallet SET Balance='$balance'";
+                    $sql = "UPDATE Wallet SET Balance=?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("d", $balance);
+                    $ress = $stmt->execute();
+                    
                     $_SESSION['balance'] = $balance;
-                    if($conn->query($sql)) {
+                    if($ress) {
                        
                         
                         header("Location: wallet.php");
@@ -175,6 +179,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     else {
                        echo '<script>alert("Något gick galet. Kontakta IT-avdelningen.")</script>'; 
                     }
+                    $stmt->close();
 
                 }
                 else {
@@ -194,24 +199,31 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 		if(is_numeric($number) && strlen($number) == 16) {
 			if(is_numeric($dateMonth) && strlen($dateMonth) == 2) {
-				if(is_numeric($dateYear) && strlen($dateYear) == 4) {
+				if(is_numeric($dateYear) && strlen($dateYear) == 2) {
 					if(is_numeric($cvc) && strlen($cvc) == 3) {
 						if(is_numeric($sum) && $sum > 0 && $sum <= 100000) {
 							
 							$balance = $balance + $sum;
 
-							$sql = "UPDATE Wallet SET Balance='$balance'";
+							$sql = "UPDATE Wallet SET Balance=? WHERE Username=?";
+                                                        $stmt = $conn->prepare($sql);
+                                                        $stmt->bind_param("ds", $balance, $username);
+                                                        $ress = $stmt->execute();
+                                                        
                                                         $_SESSION['balance'] = $balance;
-							if($conn->query($sql)) {
+							if($ress) {
                                                             
                                                             
 								header("Location: wallet.php");
 								die;
-							}
-							echo '<script>alert("Något gick galet. Kontakta IT-avdelningen.")</script>'; 
+							} else {
+                                                            echo '<script>alert("Något gick galet. Kontakta IT-avdelningen.")</script>'; 
+
+                                                        }
+                                                        $stmt->close();
 						} 
 						else {
-							echo '<script>alert("Du måste sätta in ett positivt belopp.")</script>'; 
+							echo '<script>alert("Du måste sätta in ett positivt belopp mellan 0 och 100,000.")</script>'; 
 						}
 					}
 					else {
@@ -219,7 +231,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 					}
 				}
 				else {
-					echo '<script>alert("Fel angett år, 20xx.")</script>'; 
+					echo '<script>alert("Fel angett år, xx.")</script>'; 
 				}	
 			}
 			else {
@@ -235,6 +247,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 <center>
 <p>
-&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
+&copy; <?php echo date ('Y') . " Sverige-mineralen AB. All rights reserved."; ?></p></center>
 </body>
 </html>

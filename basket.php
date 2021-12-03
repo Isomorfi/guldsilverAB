@@ -12,7 +12,6 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 }
 
 
-
 $username = $_SESSION['username'];
 $orderID = '';
 $total = 0;
@@ -22,49 +21,75 @@ $shippingcost = 0;
 $sql = "DELETE FROM OrderItems WHERE Quantity='0'";
 $conn->query($sql);
 
-
-
 if($_SERVER['REQUEST_METHOD'] == "POST") {
     if (isset($_POST['Betala'])) {
-        if(isset($_POST['pickup']) ^ isset($_POST['ship'])) { // ena eller andra
-		$orderID = $_POST['Betala'];
-		$_SESSION['orderID'] = $orderID;
-		$total = $_POST['tot'];
+        if(isset($_POST['pickup']) ^ isset($_POST['ship'])) { // Ena eller det andra
+		    $orderID = $_POST['Betala'];
+		    $_SESSION['orderID'] = $orderID;
+		    $total = $_POST['tot'];
 
-                
-                $sql = "SELECT Balance FROM Wallet WHERE Username='$username'";
-                $res = mysqli_query($conn, $sql);
-		$data = mysqli_fetch_assoc($res);
-		$balance = $data['Balance'];
+            $sql = "SELECT Balance FROM Wallet WHERE Username=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("s", $username);
+            if($stmt->execute()) {
+                $res = $stmt->get_result();
+                $data = $res->fetch_assoc();
+                $stmt->close();
+                $balance = $data['Balance'];
+            } 
                   
-                if($balance >= $total) {
+            if($balance >= $total) {
                     
-                    if(isset($_POST['ship'])) {
-                        $shippingcost = $_POST['shipcost'];
-                        $balance = $balance - $total - $shippingcost;
-                        $inclship = $total + $shippingcost;
-                        $sql = "UPDATE db19880310.Orders SET Status='Ordered', CostInclShip='$inclship', ShippingCost='$shippingcost', Delivery='Shipping', orderDate=CURRENT_TIMESTAMP, TotalCost='$total' WHERE Username='$username' AND OrderID='$orderID'"; 
-                        $conn->query($sql);
-                    }
-                    else {
-                        $shippingcost = 0;
-                        $balance = $balance - $total;
-                        $inclship = $total + $shippingcost;
-                        $sql = "UPDATE db19880310.Orders SET Status='Ordered', CostInclShip='$inclship', ShippingCost='$shippingcost', Delivery='Pick up', orderDate=CURRENT_TIMESTAMP, TotalCost='$total' WHERE Username='$username' AND OrderID='$orderID'"; 
-                        $conn->query($sql);
-                    }
-                
+                if(isset($_POST['ship'])) {
+                    $shippingcost = $_POST['shipcost'];
+                    $balance = $balance - $total - $shippingcost;
+                    $inclship = $total + $shippingcost;
+
+                    $sql = "UPDATE Orders 
+                            SET Status=?, CostInclShip=?, ShippingCost=?, Delivery=?, orderDate=CURRENT_TIMESTAMP, TotalCost=? 
+                            WHERE Username=? AND OrderID=?"; 
+                    $stmt = $conn->prepare($sql);
+                    $status = 'Ordered';
+                    $delivery = 'Shipping';
+                    $stmt->bind_param("ssisssi", $status, $inclship, $shippingcost, $delivery, $total, $username, $orderID);
+                    
+                }
+                else {
+                    $shippingcost = 0;
+                    $balance = $balance - $total;
+                    $inclship = $total + $shippingcost;
+
+                    $sql = "UPDATE db19880310.Orders 
+                            SET Status=?, CostInclShip=?, ShippingCost=?, Delivery=?, orderDate=CURRENT_TIMESTAMP, TotalCost=? 
+                            WHERE Username=? AND OrderID=?"; 
+                    $stmt = $conn->prepare($sql);
+                    $status = 'Ordered';
+                    $delivery = 'Pick up';
+                    $stmt->bind_param("ssisssi", $status, $inclship, $shippingcost, $delivery, $total, $username, $orderID);
+                }
+
+                if($stmt->execute()) {
                     $_SESSION['balance'] = $balance;
 
-                    $sql = "UPDATE db19880310.Wallet SET Balance='$balance' WHERE Username='$username'"; 
-                    $conn->query($sql);
+                    $sql = "UPDATE Wallet SET Balance=? WHERE Username=?"; 
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ds", $balance, $username);
+                    $stmt->execute();
                     
+                    $stmt->close();
                     header("Location: checkout.php");	
                     die;
                 }
                 else {
-                    echo '<script>alert("Du har inte nog med pengar för att kunna handla.")</script>';
+                    $stmt->close();
+                    header("Location: basket.php");
+                    die;
                 }
+                
+            }
+            else {
+                echo '<script>alert("Du har inte nog med pengar för att kunna handla.")</script>';
+            }
         }
         else {
             echo '<script>alert("Du måste välja ett leveransalternativ.")</script>';
@@ -80,37 +105,56 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$newquantity = $_POST['changegold'];
 		$prodid = $_POST['change'];
 
-                $conn->begin_transaction();
-		$sql = "SELECT Stock FROM db19880310.Products WHERE ProductID='$prodid'";
-		
-		$res = mysqli_query($conn, $sql);
-		$data = mysqli_fetch_assoc($res);
-		$stock = $data['Stock'];
-                
-		$sql1 = "SELECT Quantity FROM db19880310.OrderItems WHERE ProductID='$prodid' AND OrderID='$orderID'";
-		
-		$res1 = mysqli_query($conn, $sql1);
-		$data1 = mysqli_fetch_assoc($res1);
-		$quantity = $data1['Quantity'];
+        $conn->begin_transaction();
 
+        $sql = "SELECT Stock FROM Products WHERE ProductID=?";
+		$stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $prodid);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $data = $res->fetch_assoc();
+        $stmt->close();
+
+		$stock = $data['Stock'];
+
+        $sql = "SELECT Quantity FROM OrderItems WHERE ProductID=? AND OrderID=?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $prodid, $orderID);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $data = $res->fetch_assoc();
+        $stmt->close();
+
+		$quantity = $data['Quantity'];
 
 		if($newquantity >= 0 && $stock >= $newquantity) {
 
 			$diff = $quantity - $newquantity;
-			
 			$newStock = $stock + $diff;
 
-			echo "newstock = " . $newstock;
-			
-			$sql = "UPDATE db19880310.Products SET Stock='$newStock' WHERE ProductID='$prodid'";
-			$conn->query($sql);
+            $sql = "UPDATE Products 
+                    SET Stock=?
+                    WHERE ProductID=?";
 
-                        $sql = "UPDATE db19880310.OrderItems SET Quantity='$newquantity' WHERE ProductID='$prodid' AND OrderID='$orderID'"; 
-			$res = mysqli_query($conn, $sql);
-                        $conn->commit();
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $newStock, $prodid);
+            $stmt->execute();
+
+            $sql = "UPDATE OrderItems 
+                    SET Quantity=?
+                    WHERE ProductID=? AND OrderID=?"; 
+			$stmt = $conn->prepare($sql);
+            $stmt->bind_param("iii", $newquantity, $prodid, $orderID);
+            $stmt->execute();
+
+            $stmt->close();
+            
+            $conn->commit();
 			header("Location: basket.php");	
 			die;
-		}
+		} else {
+            $conn->commit();
+        }
     }
    
 }
@@ -130,47 +174,44 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 </head>
 <body>
 
-    <header>
-        <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
-        <div class="topnav">
+<header>
+    <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
+    <div class="topnav">
 
-            <a href="store.php">
-                <h1>Sverige-mineralen AB</h1>
-            </a>
+        <a href="store.php">
+            <h1>Sverige-mineralen AB</h1>
+        </a>
 
-            <div id="topnav-right">
+        <div id="topnav-right">
 
+            <?php
+            if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
+
+                <fieldset class="fieldset-auto-width">
                 <?php
-                if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
-
-                    <fieldset class="fieldset-auto-width">
-                    <?php
-                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr." . "</p>";
-                    ?>
-                    </fieldset>
-                <?php
-                }
+                echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr." . "</p>";
                 ?>
-                <a href="store.php">
-                    <h2>Produkter</h2>
-                </a>
-                <a href="mypages.php">
-                    <h2>Mina sidor</h2>
-                </a>
-                <a href="home.php">
-                    <h2>Logga ut</h2>
-                </a>
+                </fieldset>
+            <?php
+            }
+            ?>
+            <a href="store.php">
+                <h2>Produkter</h2>
+            </a>
+            <a href="mypages.php">
+                <h2>Mina sidor</h2>
+            </a>
+            <a href="home.php">
+                <h2>Logga ut</h2>
+            </a>
                 
-            </div>
         </div>
-    </header>
+    </div>
+</header>
 
-<br>
+<br><center><h1>Kundvagn</h1></center><br>
 
-<center><br>
-    <h1>Kundvagn</h1></center><br>
 <?php
-
 $sql = "SELECT * FROM Orders
         INNER JOIN OrderItems ON Orders.OrderID=OrderItems.OrderID
         INNER JOIN Products ON OrderItems.ProductID=Products.ProductID WHERE Username='$username' AND Status='Basket'";
@@ -272,6 +313,6 @@ if($total != 0) {
 </fieldset>
 <center>
 <p>
-&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
+&copy; <?php echo date ('Y') . " Sverige-mineralen AB. All rights reserved."; ?></p></center>
 </body>
 </html>

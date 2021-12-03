@@ -9,7 +9,10 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 	die;
 	
 }
-
+if(isset($_SESSION['message']) && $_SESSION['message'] == true) {
+    echo '<script>alert("Produkt tillagd.")</script>';
+    $_SESSION['message'] = false;
+}
 
 if(isset($_GET['ProductID'])){
     $_SESSION['ProductID'] = $_GET['ProductID'];
@@ -59,22 +62,28 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		if(strlen($name) > 0 && strlen($price) > 0 && strlen($url) > 0 && strlen($weight) > 0 && strlen($info) > 0 && strlen($stock) >= 0 && strlen($unit) > 0) {
 			
 			if($prodid == 0) {
-				$sql = "INSERT INTO Products (ProductName, Price, PicSrc, Stock, Description, Unit, Weight) VALUES ('$name', '$price', '$url', '$stock', '$info', '$unit', '$weight')";
-				if ($conn->query($sql) === TRUE) {
-					echo '<script>alert("Ny produkt skapad!")</script>';
-					}
-                        		else {
-                            		echo '<script>alert("Produkt kan inte skapas just nu! Kontakta IT-avdelningen!")</script>';
-                        		}
+				$sql = "INSERT INTO Products (ProductName, Price, PicSrc, Stock, Description, Unit, Weight) VALUES (?, ?, ?, ?, ?, ?, ?)";
+				
+                                $stmt = $conn->prepare($sql); 
+                                $stmt->bind_param("sdsissi", $name, $price, $url, $stock, $info, $unit, $weight);
+                                $stmt->execute();
+                                $stmt->close();
+                                
+                                $_SESSION['message'] = true;
+                                header("Location: createProduct.php");
+                                die;
+      
 			}
 			else {
-				$sql = "UPDATE Products SET Productname='$name', Price='$price', PicSrc='$url', Stock='$stock', Description='$info', Unit='$unit', Weight='$weight' WHERE ProductID='$prodid'";	
-				if ($conn->query($sql) === TRUE) {
-					echo '<script>alert("Produkt uppdaterad!")</script>';
-				}
-                        	else {
-                                    echo '<script>alert("Produkt kan inte uppdateras just nu! Kontakta IT-avdelningen!")</script>';
-                        	}
+				$sql = "UPDATE Products SET Productname=?, Price=?, PicSrc=?, Stock=?, Description=?, Unit=?, Weight=? WHERE ProductID=?";	
+				$stmt = $conn->prepare($sql); 
+                                $stmt->bind_param("sdsissii", $name, $price, $url, $stock, $info, $unit, $weight, $prodid);
+                                $stmt->execute();
+                                $stmt->close();
+                                
+                                $_SESSION['message'] = true;
+                                header("Location: createProduct.php");
+                                die;
 			}
                       
                 }
@@ -104,7 +113,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         <div class="topnav">
 
             <a href="store.php">
-                <h1>Sverige-mineralen AB - Skapa produkt</h1>
+                <h1>Sverige-mineralen AB</h1>
             </a>
 
             <div id="topnav-right">
@@ -114,7 +123,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
                     <fieldset class="fieldset-auto-width">
                     <?php
-                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr" . "</p>";
                     ?>
                     </fieldset>
                 <?php
@@ -134,7 +143,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
     </header>
 
-<br><br>
+<br>
+<center><h1>Skapa produkt</h1></center>
+<br>
 
 
 <fieldset>
@@ -185,6 +196,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 </fieldset>
 <center>
 <p>
-&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
+&copy; <?php echo date ('Y') . " Sverige-mineralen AB. All rights reserved."; ?></p></center>
 </body>
 </html>

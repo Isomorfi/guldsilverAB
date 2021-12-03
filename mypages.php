@@ -11,9 +11,7 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 	
 }
 
-
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -27,38 +25,37 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 <body>
 
 <header>
-        <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
-        <div class="topnav">
+    <center><label>&#10004; Snabb leverans  &#10004; Låga priser  &#10004; Miljöcertifierade produkter</label></center>
+    <div class="topnav">
 
-            <a href="store.php">
-                <h1>Sverige-mineralen AB - Mina sidor</h1>
-            </a>
+        <a href="store.php">
+            <h1>Sverige-mineralen AB</h1>
+        </a>
 
-            <div id="topnav-right">
+        <div id="topnav-right">
 
+            <?php
+            if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
+                <fieldset class="fieldset-auto-width">
                 <?php
-                if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
-
-                    <fieldset class="fieldset-auto-width">
-                    <?php
-                    echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr." . "</p>";
-                    ?>
-                    </fieldset>
-                <?php
-                }
+                echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr." . "</p>";
                 ?>
-                <a href="store.php">
-                    <h2>Produkter</h2>
-                </a>
-                <a href="home.php">
-                    <h2>Logga ut</h2>
-                </a>
+                </fieldset>
+            <?php
+            }
+            ?>
+            <a href="store.php">
+                <h2>Produkter</h2>
+            </a>
+            <a href="home.php">
+                <h2>Logga ut</h2>
+            </a>
                 
-            </div>
         </div>
-    </header>
+    </div>
+</header>
 
-<br><br>
+<br><center><h1>Mina sidor</h1></center><br>
 
 
 <center>
