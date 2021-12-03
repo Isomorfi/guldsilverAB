@@ -96,7 +96,7 @@ $conn->commit();
 <Head>      
     <link rel="stylesheet" href="style.css">
     <Title>     
-    Sverige-mineral AB  
+    Sverige-mineralen AB  
     </Title>  
    
     </Head>  
@@ -126,8 +126,8 @@ $conn->commit();
       </header>
         
 
-
-    <center><h1>Välkommen till Sveriges minsta e-handelsbutik för mineraler.</h1></center>
+        <br>
+    <center><h1>Välkommen till Sveriges minsta e-handelsbutik för mineraler!</h1></center>
         <br>
         <br>
         
