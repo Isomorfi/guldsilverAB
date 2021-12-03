@@ -218,15 +218,15 @@ if (!isset($_SESSION['value'])) {
         
 <?php
 if($_SESSION['value'] > 0) { ?>
-        <br><br>
-    <button type="submit" name="prev" value="<?php echo $low - 10;?>">Föregående</button><?php
+        <br><br><br>
+    <button type="submit" name="prev" value="<?php echo $low - 10;?>">Föregående produkter</button><?php
     
 }
 ?>
     <?php
 if($countrow == 8 ) { ?>
-    <br>
-<button type="submit" name="next" value="<?php echo $high + 10;?>">Nästa</button>
+    <br><br>
+<button type="submit" name="next" value="<?php echo $high + 10;?>">Fler produkter</button>
 <?php
     
 }

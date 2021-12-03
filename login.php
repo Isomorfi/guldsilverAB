@@ -75,7 +75,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 </div>
 
       </header>
-    <br><br><br><br><br><br>
+    <br>
+<center><h1>Logga in</h1></center><br>
 <fieldset>
 <form name="form" method="POST">
 <p style="text-align:center;"><label for="username">Användarnamn:</label></p>
@@ -89,6 +90,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 </fieldset>
 <center>
 <p>
-&copy; <?php echo date ('Y') . " Guld och silver AB. All rights reserved."; ?></p></center>
+&copy; <?php echo date ('Y') . " Sverige-mineralen AB. All rights reserved."; ?></p></center>
 </body>
 </html>

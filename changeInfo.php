@@ -114,7 +114,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
                 <fieldset class="fieldset-auto-width">
                 <?php
-                echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr." . "</p>";
+                echo "<p>" . "Inloggad: " . $_SESSION['username'] . "<br>" . "Kontobalans: " . $_SESSION['balance'] . " kr" . "</p>";
                 ?>
                 </fieldset>
             <?php

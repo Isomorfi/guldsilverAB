@@ -38,7 +38,7 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
             if(isset($_SESSION['signedin']) && $_SESSION['signedin'] == true) {?>
                 <fieldset class="fieldset-auto-width">
                 <?php
-                echo "<p>" . "Inloggad: " . $_SESSION['username'] . "." . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr." . "</p>";
+                echo "<p>" . "Inloggad: " . $_SESSION['username'] . "<br>" . "Kontobalans: " . number_format($_SESSION['balance'], 2, '.', ',') . " kr" . "</p>";
                 ?>
                 </fieldset>
             <?php

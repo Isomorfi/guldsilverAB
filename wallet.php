@@ -164,9 +164,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 if(isset($_POST['checkbox_name'])) {
                     $balance = $balance - $sum;
 
-                    $sql = "UPDATE Wallet SET Balance=?";
+                    $sql = "UPDATE Wallet SET Balance=? WHERE Username=?";
                     $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("d", $balance);
+                    $stmt->bind_param("ds", $balance, $username);
                     $ress = $stmt->execute();
                     
                     $_SESSION['balance'] = $balance;

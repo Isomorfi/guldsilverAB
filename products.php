@@ -14,6 +14,11 @@ if(isset($_GET['ProductID'])){
     $_SESSION['ProductID'] = $_GET['ProductID'];
 }
 
+if(isset($_SESSION['message']) && $_SESSION['message'] == true) {
+    echo '<script>alert("Produkt tillagd i varukorg.")</script>';
+    $_SESSION['message'] = false;
+}
+
 
 $username = $_SESSION['username'];
 $orderID = '';
@@ -21,9 +26,21 @@ $quantity = '';
 
 $comment = '';
 $prodid = $_SESSION['ProductID'];
-
+$offset = 0;
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
+    
+        if (isset($_POST['prev'])) {
+            $_SESSION['value'] += -1;
+            $offset = 5 * $_SESSION['value'];
+            
+        }
+        if (isset($_POST['next'])) {
+            $_SESSION['value'] += 1;
+            $offset = 5 * $_SESSION['value'];
+        }
+    
+
 
 	if (isset($_POST['update'])) {
 		$stockvalue = $_POST['stock'];
@@ -201,8 +218,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         
 			$_SESSION['postdata'] = $_POST;
                         unset($_POST);
-                        header("Location: basket.php");
-                        die;
+                        $_SESSION['message'] = true;
+                                header("Location: products.php");
+                                die;
 		}
                 else {
                     echo '<script>alert("Det finns inte nog många enheter av denna produkt eller så har du inte nog mycket pengar.")</script>';
@@ -211,6 +229,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
 	}
 	
+}
+else {
+    $_SESSION['value'] = 0;
 }
 
 ?>
@@ -369,13 +390,14 @@ if($_SESSION['username'] !== "Admin") {?>
 
 <?php
 
-$sql = "SELECT * FROM db19880310.Comments WHERE ProductID='$prodid' ORDER BY CommentDate DESC";
+$sql = "SELECT * FROM db19880310.Comments WHERE ProductID='$prodid' ORDER BY CommentDate DESC LIMIT ".$offset.", 5";
 $result = mysqli_query($conn, $sql); 
 
 echo "<br>";
 
-
+$countrow = 0;
 while ($row = mysqli_fetch_assoc($result)) {
+    $countrow++;
 ?>
 <center>
 
@@ -393,33 +415,61 @@ if(isset($row['Answers'])) { ?>
 <div style="width:350px; display: block; margin-left: auto; margin-right: auto; border: 10px black;">
 <?php
     echo "<h4 style=\"color:black;\">" . $row['Author'] . "&nbsp;" . "(" . $row['AnswerDate'] . ")" . "</h4>";
-    echo "<p style=\"color:black;\">" . $row['Answers'] . "</p>"; 
+    echo "<p style=\"color:black;\">" . $row['Answers'] . "</p>"; ?>
+    </fieldset><?php
 }
 ?> 
-</div></fieldset>
+</div>
 <?php
 if(($_SESSION['username'] === $row['Username'] && (!isset($row['Answers']))) || $_SESSION['username'] === "Admin") {?>
-<form name="form" method="POST">
+    <form name="form" method="POST">
     <p  style="text-align:center;">
 	<button type="submit" name="Delete" value="<?php echo $row['CommentID']?>">Ta bort</button></p>
 	<?php if(!isset($row['Answers']) && $_SESSION['username'] === "Admin") {?>
 		<p style="text-align:center;"><textarea name="Ans" cols="40" rows="5"></textarea></p>
 		<p style="text-align:center;"><button type="submit" name="Answer" value="<?php echo $row['CommentID']?>">Svara</button></p>
 	<?php } ?>
-</form>
+    </form>
 <?php
 }
-    
 ?>
-   </p>
+  
+
+</p></fieldset>
 </div>
-   </fieldset></center>
+       
+        
+   </center>
 <br>
 <?php
 
 }
-
+  
+  if (!isset($_SESSION['value'])) {
+    $_SESSION['value'] = 0;
+}
 ?>
+<center>     
+    <form name="form" method="POST">
+        
+<?php
+if($_SESSION['value'] > 0) { ?>
+        <br><br>
+    <button type="submit" name="prev" value="<?php echo $low - 10;?>">Nyare kommentarer</button><?php
+    
+}
+?>
+    <?php
+if($countrow == 5 ) { ?>
+    <br>
+    <button type="submit" name="next" value="<?php echo $high + 10;?>">Äldre kommentarer</button>
+<?php
+    
+}
+?>
+  
+</form>
+</center>
 
 </fieldset>
 <center>

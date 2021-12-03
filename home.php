@@ -5,8 +5,16 @@ include("db_connection.php");
 
 
 session_start();
+
+
+$vars = array_keys(get_defined_vars());
+foreach($vars as $var) {
+    unset(${"$var"});
+}
+
+
 include("db_connection.php");
-unset($_SESSION['signedin']);
+/*unset($_SESSION['signedin']);
 unset($_SESSION['username']);
 unset($_SESSION['firstname']);
 unset($_SESSION['lastname']);
@@ -16,7 +24,7 @@ unset($_SESSION['city']);
 unset($_SESSION['country']);
 unset($_SESSION['email']);
 unset($_SESSION['phone']);
-unset($_SESSION['balance']);
+unset($_SESSION['balance']);*/
 
 $conn->begin_transaction();
 $sql = "SELECT Orders.OrderID, OrderItems.ProductID, OrderItems.Quantity, Orders.OrderDate, Orders.Status

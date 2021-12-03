@@ -139,7 +139,7 @@ while ($data = mysqli_fetch_assoc($res)) {
   	    name="submit" width="200" height="150"/></p>
     </div>
 
-    <div style="width:350px; float:left;"><p><label id="silver"><br><?php echo $data3['ProductName']?>. <br><br>Antal <?php echo $unit;?>: <?php echo $data['Quantity']?> <br><br>Kostnad: <?php echo number_format($data['TotalCost'], 2, '.', ',')?> kr</label></p>
+    <div style="width:350px; float:left;"><p><label id="silver"><br><?php echo $data3['ProductName']?> <br><br>Antal <?php echo $unit;?>: <?php echo $data['Quantity']?> <br><br>Kostnad: <?php echo number_format($data['TotalCost'], 2, '.', ',')?> kr</label></p>
 
     </div>
     </div>

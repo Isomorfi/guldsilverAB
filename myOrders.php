@@ -143,6 +143,10 @@ else {
 <select name="searchtype" id="searchtype">
     <option value="orderid">Ordernummer</option>
     <option value="orderdate">Datum</option>
+    <option value="DELIVERY">Leveransmetod</option>
+    <option value="TotalCost">Produktkostnad</option>
+    <option value="ShippingCost">Leveranskostnad</option>
+    <option value="CostInclShip">Totalkostnad</option>
 </select><button type="submit" name="searchbtn" value="Submit">Sök</button>
   </p>
 </form>
@@ -174,7 +178,7 @@ echo '<tr><td style="text-align: center; vertical-align: middle;">';
     echo '</td><td style="text-align: center; vertical-align: middle;">';
     echo "<p>" . "Produktkostnad" . "</p>";
     echo '</td><td style="text-align: center; vertical-align: middle;">';
-    echo "<p>" . "Total kostnad" . "</p>";
+    echo "<p>" . "Totalkostnad" . "</p>";
     echo '</td></tr>';
 if (!$result){
    die();
@@ -230,7 +234,7 @@ echo '<tr><td style="text-align: center; vertical-align: middle;">';
     echo '</td><td style="text-align: center; vertical-align: middle;">';
     echo "<p>" . "Produktkostnad" . "</p>";
     echo '</td><td style="text-align: center; vertical-align: middle;">';
-    echo "<p>" . "Total kostnad" . "</p>";
+    echo "<p>" . "Totalkostnad" . "</p>";
     echo '</td></tr>';
 if($result) {
 while ($row = $result->fetch_assoc()) {
@@ -266,13 +270,13 @@ if (!isset($_SESSION['value'])) {
         
 <?php
 if($_SESSION['value'] > 0) { ?>
-    <button type="submit" name="prev" value="<?php echo $low - 10;?>">Föregående</button><?php
+    <button type="submit" name="prev" value="<?php echo $low - 10;?>">Nyare ordrar</button><?php
     
 }
 ?>
     <?php
 if($countrow == 10 ) { ?>
-<button type="submit" name="next" value="<?php echo $high + 10;?>">Nästa</button>
+<button type="submit" name="next" value="<?php echo $high + 10;?>">Äldre ordrar</button>
 <?php
     
 }
