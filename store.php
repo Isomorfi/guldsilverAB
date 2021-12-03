@@ -187,7 +187,7 @@ while ($data = $result->fetch_assoc()) {
 
             echo "<p style=\"text-align:center;\"><a href=\"$link?ProductID=$prodid\"><input type=\"image\" src=\"$src\" 
                 name=\"submit\" width=\"200\" height=\"200\"/></a></p>";?>
-            <label><?php echo "<p style=\"text-align:center;\"><a href=\"$link?ProductID=$prodid\">$prodname" . "<br><br>" . "Pris: " . number_format($pricee, 2, '.', ',') . "kr/" . $unit . "</a></p>";?></label>
+            <label><?php echo "<p style=\"text-align:center;\"><a href=\"$link?ProductID=$prodid\">$prodname" . "<br><br>" . "Pris: " . number_format($pricee, 2, '.', ',') . " kr/" . $unit . "</a></p>";?></label>
 
             </fieldset>
         </div>

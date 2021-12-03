@@ -89,24 +89,24 @@ while ($row = mysqli_fetch_assoc($result)) {
 <fieldset class="fieldset-auto-width2">
     
 <?php
-    echo "Ordernummer";
+    echo "<b>Ordernummer</b>";
     echo "<p>" . $_SESSION['orderID'] . "</p>";
     echo "<br>";
-    echo "Leveransadress";
+    echo "<b>Leveransadress</b>";
     echo "<p>" . $row['Firstname'] . " " . $row['Lastname'] . "</p>";
     echo "<p>" . $row['Address'] . "</p>";
     echo "<p>" . $row['ZIP'] . " " . $row['City'] . "</p>";
     echo "<p>" . $row['Country'] . "</p>";
     echo "<br>";
-    echo "Kontaktuppgifter";
-    echo "<p>" . "E-post " . $row['Email'] . "</p>";
-    echo "<p>" . "Telefon " . $row['Phone'] . "</p>";
+    echo "<b>Kontaktuppgifter</b>";
+    echo "<p>" . "E-post: " . $row['Email'] . "</p>";
+    echo "<p>" . "Telefon: " . $row['Phone'] . "</p>";
     echo "<br>";
-    echo "Leveranssätt";
+    echo "<b>Leveranssätt</b>";
     echo "<p>" . $row['DELIVERY'] . "</p>";
     echo "<p>" . "Leveranskostnad: " . $row['ShippingCost'] . " kr" . "</p>";
     echo "<br>";
-    echo "Din beställning";
+    echo "<b>Din beställning</b>";
 }
 ?>
 
@@ -139,7 +139,7 @@ while ($data = mysqli_fetch_assoc($res)) {
   	    name="submit" width="200" height="150"/></p>
     </div>
 
-    <div style="width:350px; float:left;"><p><label id="silver"><br>99,9% rent <?php echo $data3['ProductName']?>. <br><br>Antal <?php echo $unit;?>: <?php echo $data['Quantity']?> <br><br>Kostnad: <?php echo number_format($data['TotalCost'], 2, '.', ',')?> kr</label></p>
+    <div style="width:350px; float:left;"><p><label id="silver"><br><?php echo $data3['ProductName']?>. <br><br>Antal <?php echo $unit;?>: <?php echo $data['Quantity']?> <br><br>Kostnad: <?php echo number_format($data['TotalCost'], 2, '.', ',')?> kr</label></p>
 
     </div>
     </div>
@@ -154,13 +154,13 @@ $sql3 = "SELECT * FROM Orders WHERE OrderID='$orderID'";
 $res3 = mysqli_query($conn, $sql3);
 $data3 = mysqli_fetch_assoc($res3);
 ?>
-
-<p style="text-align:center;">Orderkostnad:</p>
-
+<br>
+    <b><p style="text-align:center;">Orderkostnad:</p></b>
+    
     <?php echo "<p style=\"text-align:center;\">" . number_format($data3['TotalCost'], 2, '.', ',') . " kr + " . number_format($data3['ShippingCost'], 2, '.', ',') . " kr frakt" . "</p>";
     echo "<br>";
     $tot = $data3['TotalCost'] + $data3['ShippingCost'];
-    echo "<p style=\"text-align:center;\">" . "Total kostnad: " . number_format($tot, 2, '.', ',') . " kr" . "</p>";
+    echo "<p style=\"text-align:center;\">" . "<b>Total kostnad: </b><br><br>" . number_format($tot, 2, '.', ',') . " kr" . "</p>";
     
    ?>
 </fieldset></center>

@@ -78,6 +78,7 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 </center>
 <center>
 <p>
+    <br><br>
 &copy; <?php echo date ('Y') . " Sverige-mineralen AB. All rights reserved."; ?></p></center>
 </body>
 </html>

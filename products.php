@@ -310,7 +310,7 @@ echo "<h4 style='text-align:center;'>" . "Betyg: " . number_format($avgrat, 1) .
 
 <form name="form" method="POST">
 <div style="width:300px; display: block; margin-left: auto; margin-right: auto;">
-<p style="text-align:center;"><label for="fname"><?php echo $desc?> <br><br><p style="text-decoration: underline; text-align:center;">Antal i lager: <?php echo $_SESSION['Stock'], " " . $unit; ?><br><br>Pris: <?php echo number_format($pricegold, 2, '.', ',')?> kr/<?php echo $unit?></label></p></p></div>
+<p style="text-align:center;"><label for="fname"><?php echo $desc?> <br><br><p style="text-decoration: underline; text-align:center;">Antal i lager: <?php echo number_format($_SESSION['Stock'], 0, '', ','), " " . $unit; ?><br><br>Pris: <?php echo number_format($pricegold, 2, '.', ',')?> kr/<?php echo $unit?></label></p></p></div>
 
 <?php
 if($_SESSION['username'] === "Admin") {?>
@@ -367,9 +367,6 @@ if($_SESSION['username'] !== "Admin") {?>
 <br>
 
 
-
-
-
 <?php
 
 $sql = "SELECT * FROM db19880310.Comments WHERE ProductID='$prodid' ORDER BY CommentDate DESC";
@@ -386,18 +383,20 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 <div style="width:400px; display: block; margin-left: auto; margin-right: auto; border: 15px black;">
     <p>
+        
 <?php
     echo "<h4>" . $row['Username'] . "&nbsp;" . "(" . $row['CommentDate'] . ")" . "&nbsp;" . "Betyg: " . $row['Rating'] . " av 5" ."</h4>";
     echo "<p>" . $row['Comment'] . "</p>";
 
 if(isset($row['Answers'])) { ?>
+        <fieldset class="fieldset-auto-width2">
 <div style="width:350px; display: block; margin-left: auto; margin-right: auto; border: 10px black;">
 <?php
     echo "<h4 style=\"color:black;\">" . $row['Author'] . "&nbsp;" . "(" . $row['AnswerDate'] . ")" . "</h4>";
     echo "<p style=\"color:black;\">" . $row['Answers'] . "</p>"; 
 }
 ?> 
-</div>
+</div></fieldset>
 <?php
 if(($_SESSION['username'] === $row['Username'] && (!isset($row['Answers']))) || $_SESSION['username'] === "Admin") {?>
 <form name="form" method="POST">
