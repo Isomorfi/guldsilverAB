@@ -364,6 +364,7 @@ if($_SESSION['username'] !== "Admin") {?>
 <fieldset>
 <center><h1>Kundrecensioner</h1></center>
 <?php
+
 if($_SESSION['username'] !== "Admin") {?>
 <form name="form" method="POST">
 <p style="text-align:center;"><textarea name="comment" cols="40" rows="5"></textarea></p>
@@ -379,6 +380,10 @@ if($_SESSION['username'] !== "Admin") {?>
   </select>
   <br></p>
 
+
+    <?php
+    echo "<p style=\"text-align:center;\">" . "Tomma kommentarer kommer inte att synas men räknas med i produktens betyg." . "</p>";
+    ?>
 <p style="text-align:center;">
 <button type="submit" name="Recension" value="Submit">Skicka recension</button></p>
      </form>
@@ -397,6 +402,7 @@ echo "<br>";
 
 $countrow = 0;
 while ($row = mysqli_fetch_assoc($result)) {
+    if(strlen($row['Comment']) != 0) {
     $countrow++;
 ?>
 <center>
@@ -442,7 +448,7 @@ if(($_SESSION['username'] === $row['Username'] && (!isset($row['Answers']))) || 
    </center>
 <br>
 <?php
-
+}
 }
   
   if (!isset($_SESSION['value'])) {
