@@ -2,7 +2,7 @@
 session_start();
 
 include("db_connection.php");
-
+$stat = "Active";
 $_SESSION['username'] = '';
 	$_SESSION['firstname'] = '';
 	$_SESSION['lastname'] = '';
@@ -46,14 +46,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 							$hash_pwd = sha1($password);
                                                 
 							$sql = "INSERT INTO Customers (	Username, Firstname, Lastname, Password, SSN, 
-															Address, ZIP, City, Country, Email, Phone)
-									VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+															Address, ZIP, City, Country, Email, Phone, UserStatus)
+									VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 							$stmt = $conn->prepare($sql);
-							$stmt->bind_param("sssssssssss", $username, $firstname, $lastname, 
+							$stmt->bind_param("ssssssssssss", $username, $firstname, $lastname, 
 												$hash_pwd, $ssn, $_SESSION['address'], $_SESSION['zip'], 
 												$_SESSION['city'], $_SESSION['country'], $_SESSION['email'], 
-												$_SESSION['phone']);
+												$_SESSION['phone'], $stat);
 
 							if($res = $stmt->execute()) {
 

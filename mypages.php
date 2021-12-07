@@ -59,6 +59,17 @@ if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 
 
 <center>
+    <?php
+    if($_SESSION['username'] === "Admin") {
+                ?>
+            <a href="allUsers.php"><button type="submit" value="Submit">Användardata</button></a>
+<br>
+<br>
+<br>
+            <?php
+            }
+            ?>
+    
 <a href="myOrders.php"><button type="submit" value="Submit">Beställningar</button></a>
 <br>
 <br>

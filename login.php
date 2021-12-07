@@ -19,23 +19,29 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	else {
            
             // prepare and bind
-            $sql = "SELECT Password FROM db19880310.Customers WHERE Username=?";
+            $sql = "SELECT Password, UserStatus FROM db19880310.Customers WHERE Username=?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("s", $username);
             $stmt->execute();
             $result = $stmt->get_result(); // get the mysqli result
             $data = $result->fetch_assoc(); // fetch data  
             
-            $hash_pwd = sha1($password);
-
-            if($hash_pwd === $data['Password']) {
-                    $_SESSION['signedin'] = true;
-                    $_SESSION['username'] = $username;
-                    header("Location: store.php");
-                    die;
-            } else {
-                    echo '<script>alert("Felaktigt lösenord.")</script>';
+            if($data['UserStatus'] === "Inactive" && $username !== "Admin") {
+                echo '<script>alert("Ditt konto har blivit avstängt.")</script>';
             }
+            else {
+                $hash_pwd = sha1($password);
+
+                if($hash_pwd === $data['Password']) {
+                        $_SESSION['signedin'] = true;
+                        $_SESSION['username'] = $username;
+                        header("Location: store.php");
+                        die;
+                } else {
+                        echo '<script>alert("Felaktigt lösenord.")</script>';
+                }
+            }
+            
             $stmt->close();
   
             $conn->close();
