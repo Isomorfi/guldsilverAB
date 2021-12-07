@@ -43,65 +43,67 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 if(is_numeric($_SESSION['zip'])) {
                     if(is_numeric($_SESSION['phone'])) {
                         if(isset($_POST['checkbox_name'])) {
-							$hash_pwd = sha1($password);
+				$hash_pwd = sha1($password);
                                                 
-							$sql = "INSERT INTO Customers (	Username, Firstname, Lastname, Password, SSN, 
-															Address, ZIP, City, Country, Email, Phone, UserStatus)
-									VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				$sql = "INSERT INTO Customers (	Username, Firstname, Lastname, Password, SSN, 
+					Address, ZIP, City, Country, Email, Phone, UserStatus)
+					VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-							$stmt = $conn->prepare($sql);
-							$stmt->bind_param("ssssssssssss", $username, $firstname, $lastname, 
+					$stmt = $conn->prepare($sql);
+					$stmt->bind_param("ssssssssssss", $username, $firstname, $lastname, 
 												$hash_pwd, $ssn, $_SESSION['address'], $_SESSION['zip'], 
 												$_SESSION['city'], $_SESSION['country'], $_SESSION['email'], 
 												$_SESSION['phone'], $stat);
 
-							if($res = $stmt->execute()) {
+				if($res = $stmt->execute()) {
 
-								// Skapan en plånbok för ny användare
-								$sql = "INSERT INTO Wallet (Username, Balance) VALUES (?, ?)";
-								$stmt = $conn->prepare($sql);
-								$balance = 0;
-								$stmt->bind_param("sd", $username, $balance);
-								$stmt->execute();
-								
+                                    // Skapan en plånbok för ny användare
+                                    $sql = "INSERT INTO Wallet (Username, Balance) VALUES (?, ?)";
+                                    $stmt = $conn->prepare($sql);
+                                    $balance = 0;
+                                    $stmt->bind_param("sd", $username, $balance);
+                                    $stmt->execute();
 
-								$_SESSION['signedin'] = true;
-    							$_SESSION['username'] = $username;
-								$_SESSION['balance'] = $balance;
 
-								
+                                    $_SESSION['signedin'] = true;
+                                    $_SESSION['username'] = $username;
+                                    $_SESSION['balance'] = $balance;
 
-							}
+				$stmt->close();
+				header("Location: wallet.php");
+				die;			
+
+				}
 							
-                            else {
-								echo "Användarnamnet är redan upptaget. Välj ett annat.";
-                            }
-							$stmt->close();
-							header("Location: wallet.php");
-							die;
-                        } 
-						else {
-                            echo "Felaktigt angivet telefonnummer.";
+                                else {
+                                    echo '<script>alert("Användarnamnet är redan upptaget. Välj ett annat.")</script>';
+                                        $stmt->close();
+                                }
+				
+                                } 
+				else {
+                                     echo '<script>alert("Du måste godkänna villkoren.")</script>';
+                            
                         }
 					} 
 					else {
-						echo "Du måste godkänna villkoren.";
+                                                echo '<script>alert("Felaktigt angivet telefonnummer.")</script>';
 					}          
                 } 
 				else {
-                    echo "Felaktigt angivet postnummer.";
+                                    echo '<script>alert("Felaktigt angivet postnummer.")</script>';
                 }       
             } 
 			else {
-                echo "Felaktigt angivet personnummer.";
+                            echo '<script>alert("Felaktigt angivet personnummer.")</script>';
             }	
 		} 
 		else {
-			echo "Lösenord överenstämmer inte.";
+                    echo '<script>alert("Lösenord överenstämmer inte.")</script>';
 		}
 	} 
 	else {
-		echo "Fält kan ej lämnas tomma!";
+            echo '<script>alert("Fält kan ej lämnas tomma!")</script>';
 	}
 }
 
