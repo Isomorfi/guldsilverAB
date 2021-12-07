@@ -2,6 +2,19 @@
 session_start();
 include("db_connection.php");
 
+$username = $_SESSION['username'];
+$sql = "SELECT OrderItems.ProductID
+FROM Orders
+INNER JOIN OrderItems ON Orders.OrderID=OrderItems.OrderID WHERE Status='Basket' And Username='$username'";
+$res = mysqli_query($conn, $sql);
+$data = mysqli_fetch_assoc($res);
+
+if(!isset($data['ProductID'])) {
+    $bask = "empty.png";
+}
+else {
+    $bask = "full.png";
+}
 
 if(!isset($_SESSION['signedin']) && $_SESSION['signedin'] !== true) {
 	echo "Du behöver logga in för åtkomst till affären.";
@@ -20,7 +33,6 @@ if(isset($_SESSION['message']) && $_SESSION['message'] == true) {
 }
 
 
-$username = $_SESSION['username'];
 $orderID = '';
 $quantity = '';
 
@@ -278,7 +290,7 @@ else {
                     <h2>Logga ut</h2>
                 </a>
                 
-				<a href="basket.php"><input type="image" src="https://purepng.com/public/uploads/large/purepng.com-shopping-cartshoppingcarttrolleycarriagebuggysupermarkets-1421526532323sy0um.png" name="submit" width="60" height="60"/>
+				<a href="basket.php"><input type="image" src="<?php echo $bask?>" name="submit" width="60" height="60"/>
                 </a>
             </div>
         </div>
