@@ -26,7 +26,6 @@ else {
 }
 
 $offset = 0;
-$username = $_SESSION['username'];
 $orderID = '';
 $quantity = '';
 $productID = '';
