@@ -271,7 +271,7 @@ if($res) {
 ?>
 
 <fieldset>
-     <p style="text-align:center;"><label>Fraktkostnad:</label></p>
+     <p style="text-align:center;"><label>Leveranskostnad:</label></p>
 
     <?php
     $shippingcost = ceil($weight/1000) * 49; 

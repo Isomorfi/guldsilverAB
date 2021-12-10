@@ -104,7 +104,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     echo "<br>";
     echo "<b>Leveranssätt</b>";
     echo "<p>" . $row['DELIVERY'] . "</p>";
-    echo "<p>" . "Leveranskostnad: " . $row['ShippingCost'] . " kr" . "</p>";
+    echo "<p>" . "Leveranskostnad: " . number_format($row['ShippingCost'], 2, '.', ',') . " kr" . "</p>";
     echo "<br>";
     echo "<b>Din beställning</b>";
 }
