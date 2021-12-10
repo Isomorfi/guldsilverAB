@@ -26,22 +26,26 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
             $result = $stmt->get_result(); // get the mysqli result
             $data = $result->fetch_assoc(); // fetch data  
             
-            if($data['UserStatus'] === "Inactive" && $username !== "Admin") {
-                echo '<script>alert("Ditt konto har blivit avstängt.")</script>';
-            }
-            else {
-                $hash_pwd = sha1($password);
+            if($data){
+                if($data['UserStatus'] === "Inactive" && $username !== "Admin") {
+                    echo '<script>alert("Ditt konto har blivit avstängt.")</script>';
+                }
+                else {
+                    $hash_pwd = sha1($password);
 
-                if($hash_pwd === $data['Password']) {
-                        $_SESSION['signedin'] = true;
-                        $_SESSION['username'] = $username;
-                        header("Location: store.php");
-                        die;
-                } else {
-                        echo '<script>alert("Felaktigt lösenord.")</script>';
+                    if($hash_pwd === $data['Password']) {
+                            $_SESSION['signedin'] = true;
+                            $_SESSION['username'] = $username;
+                            header("Location: store.php");
+                            die;
+                    } else {
+                            echo '<script>alert("Felaktigt lösenord.")</script>';
+                    }
                 }
             }
-            
+            else {
+                echo '<script>alert("Felaktigt användarnamn.")</script>';
+            }
             $stmt->close();
   
             $conn->close();
