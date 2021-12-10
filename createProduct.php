@@ -59,7 +59,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		}
 		$stock = $_POST['stock'];
 		
-		if(strlen($name) > 0 && strlen($price) > 0 && strlen($url) > 0 && strlen($weight) > 0 && strlen($info) > 0 && strlen($stock) >= 0 && strlen($unit) > 0) {
+		if(strlen($name) > 0 && $price > 0 && strlen($url) > 0 && strlen($weight) > 0 && strlen($info) > 0 && $stock >= 0 && strlen($unit) > 0) {
 			
 			if($prodid == 0) {
 				$sql = "INSERT INTO Products (ProductName, Price, PicSrc, Stock, Description, Unit, Weight) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -88,7 +88,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                       
                 }
 		else {
-			echo '<script>alert("Fält kan inte lämnas tomma!")</script>';
+			echo '<script>alert("Något gick galet, kontrollera fält!")</script>';
 		}
 	}
 

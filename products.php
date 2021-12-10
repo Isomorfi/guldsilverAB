@@ -57,23 +57,29 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	if (isset($_POST['update'])) {
 		$stockvalue = $_POST['stock'];
                 
-		$sql = "UPDATE Products SET Stock=? WHERE ProductID=?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ii", $stockvalue, $prodid);
-                $ress = $stmt->execute();
+                if($stockvalue >= 0) {
                 
-		if($ress){
-			$_SESSION['postdata'] = $_POST;
-			unset($_POST);
-			echo '<script>alert("Fält kan inte lämnas tomma!")</script>';
-			header("Location: products.php");
-			die;
-		}
-		else {
-			echo '<script>alert("Något gick fel vid påfyllning av saldo. Kontakta IT-avdelningen.")</script>';
-		}
-                $stmt->close();
-	}
+                    $sql = "UPDATE Products SET Stock=? WHERE ProductID=?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ii", $stockvalue, $prodid);
+                    $ress = $stmt->execute();
+
+                    if($ress){
+                            $_SESSION['postdata'] = $_POST;
+                            unset($_POST);
+                            echo '<script>alert("Fält kan inte lämnas tomma!")</script>';
+                            header("Location: products.php");
+                            die;
+                    }
+                    else {
+                            echo '<script>alert("Något gick fel vid påfyllning av saldo. Kontakta IT-avdelningen.")</script>';
+                    }
+                    $stmt->close();
+                }
+                else{
+                    echo '<script>alert("Kunde ej uppdatera saldo med önskat värde.")</script>';
+                }
+        }
 
 
 	if (isset($_POST['Delete'])) {
@@ -150,13 +156,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		$quantity = $_POST['1'];
                 
 		if($quantity > 0 && $_SESSION['Stock'] >= $quantity) {
-                    //$conn->begin_transaction();
+                    $conn->begin_transaction();
                     $newStock = $_SESSION['Stock'] - $quantity;
                         $stmt = $conn->prepare("UPDATE db19880310.Products SET Stock=? WHERE ProductID=?");
                         $stmt->bind_param("ii", $newStock, $prodid);
                         $stmt->execute();
                         $stmt->close();
-			//$conn->commit();
+			$conn->commit();
                         
                         $basket = 'Basket';
                         $sql = "SELECT OrderID FROM db19880310.Orders WHERE Username=? AND Status=?"; // SQL with parameters
