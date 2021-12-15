@@ -158,11 +158,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 		if($quantity > 0 && $_SESSION['Stock'] >= $quantity) {
                     $conn->begin_transaction();
                     $newStock = $_SESSION['Stock'] - $quantity;
-                        $stmt = $conn->prepare("UPDATE db19880310.Products SET Stock=? WHERE ProductID=?");
-                        $stmt->bind_param("ii", $newStock, $prodid);
-                        $stmt->execute();
-                        $stmt->close();
-			$conn->commit();
+                    $stmt = $conn->prepare("UPDATE db19880310.Products SET Stock=? WHERE ProductID=?");
+                    $stmt->bind_param("ii", $newStock, $prodid);
+                    $stmt->execute();
+                    $stmt->close();
+                    $conn->commit();
                         
                         $basket = 'Basket';
                         $sql = "SELECT OrderID FROM db19880310.Orders WHERE Username=? AND Status=?"; // SQL with parameters
